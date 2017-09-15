@@ -1,0 +1,1183 @@
+FORMAT: 1A
+HOST: https://www.example.com/
+
+# Place to Experiment
+
+An API for experiments.
+
+**Error handling:** All responses with code 200 should be considered successful but 5xx or 4xx not.
+
+**Response status:** Responses should include the key *status* in the JSON which should be *success* for 200 responses,
+but may include *error* or some other key depending on the context.
+
+Error responses should include the field *message* which should be a human readable error message.
+
+
+# Group Experiments
+
+## Experiments [/experiments/]
+
+### Create new experiment [POST]
+
+Makes a new experiment. In the body, stage field determines what stage an experiment starts at.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+
+                {
+                    "stage": 2
+                }
+
++ Response 200 (application/json)
+
+    + Body
+
+                {
+                    "experiment": {
+                        "experiment_id": "52c0f3e9-883d-45c4-8409-69f09e01bea6"
+                    }
+                }
+
+
+## Experiment Previews [/experiments/preview/{lang_code}?team_member_id={team_member_id}&place={place}&stage={stage}&limit={limit}&offset={offset}]
+
++ Parameters
+    + lang_code (string) - The preferred language to return, i.e. en, is, fi
+    + team_member_id (string) - Filter results by team member's user ID
+    + place (string) - Filter by place to show experiments
+    + stage (int) - Filter by the stage the experiment is on
+    + limit (int) - How many to return
+    + offset (int) - where to begin
+
+### Get previews [GET]
+
+Get a preview of the experiments on the platform.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+              "previews": [
+                {
+                  "experiment_id": "1",
+                  "stage": 0,
+                  "title": "Untitled Experiment",
+                  "like_count": 22,
+                  "short_description": "An Experiment",
+                  "image": null
+                },
+                {
+                  "experiment_id": "2",
+                  "stage": 0,
+                  "title": "Untitled Experiment",
+                  "like_count": 2,
+                  "short_description": "An Experiment",
+                  "image": null
+                },
+                {
+                  "experiment_id": "3",
+                  "stage": 0,
+                  "title": "Untitled Experiment",
+                  "like_count": 0,
+                  "short_description": "An Experiment",
+                  "image": null
+                }
+            }
+
+## User's Experiments previews [/users/{user_id}/experiments/preview/{lang_code}]
+
++ Parameters
+    + lang_code (string) - The preferred language to return, i.e. en, is, fi
+    + user_id (string) - The user id, use "me" for current logged in user
+
+### Get previews [GET]
+
+Get a preview of all the user's experiments on the platform.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+              "previews": [
+                {
+                  "experiment_id": "1",
+                  "stage": 0,
+                  "title": "Untitled Experiment",
+                  "short_description": "An Experiment",
+                  "image": null
+                },
+                {
+                  "experiment_id": "2",
+                  "stage": 0,
+                  "title": "Untitled Experiment",
+                  "short_description": "An Experiment",
+                  "image": null
+                },
+                {
+                  "experiment_id": "3",
+                  "stage": 0,
+                  "title": "Untitled Experiment",
+                  "short_description": "An Experiment",
+                  "image": null
+                }
+            }
+
+
+## All experiments tags [/experiments/tags/{lang_code}]
+
++ Parameters
+    + lang_code (string) - The preferred language to return, i.e. en, is, fi
+
+### Get tags available for experiments [GET]
+
++ Request  (application/json)
+
++ Response 200 (application/json)
+
+            {
+              "status": "success",
+              "tags": [
+                {
+                  "id": "123",
+                  "label": "animals"
+                },
+                {
+                  "id": "281",
+                  "label": "children"
+                },
+                {
+                  "id": "202",
+                  "label": "cars"
+                }
+
+              ]
+            }
+
+
+## Single Experiment tags  [/experiments/{experiment_id}/tags/]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+
+### Set tags for experiment [POST]
+
+This method replaces the experiment's current tags with the supplied ones.
+Any previously set tags that are not sent along will be destroyed.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+            {
+                "tags": ["231", "311", "313"]
+            }
+
++ Response 200 (application/json)
+
+
+## Single Experiment [/experiments/{experiment_id}/{lang_code}]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+    + lang_code (string) - The preferred language to return, i.e. en, is, fi
+
+### Get Experiment [GET]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+              "experiment": {
+                "experiment_id": "175",
+                "custom_language": {
+                  "author_biography": {
+                   "value": "This author has a long history ...",
+                   "format": "html",
+                   "html": "This author has a long history ..."
+                  }
+                },
+                "disabled": false,
+                "show_in": {
+                    "index": true
+                },
+                "geographic_location": "Miami",
+                "funding": {
+                  "goal": 10000,
+                  "currency": "EUR",
+                  "sources": {
+                    "state": {
+                      "raised": "100"
+                    },
+                    "organizations": {
+                      "raised": "200"
+                    },
+                    "crowd": {
+                      "api": "https://agitator-mesenaatti.karolina.io/agitator",
+                      "campaign_id": "351"
+                    }
+                  }
+                },
+                "language": {
+                  "short_description": {
+                   "value": "This is a **nice** experiment",
+                   "format": "markdown",
+                   "html": "This is a <b>nice</b> experiment"
+                  },
+                 "title": {
+                   "value": "My Experiment",
+                   "format": "plaintext",
+                   "html": "My Experiment"
+                  }
+                },
+                "image_collection": {
+                  "main": {
+                   "url": "https://s3-eu-west-1.amazonaws.com/kfunddynamic/project_content_pics/175/medium/2a5dd4a049eb08c57f15369180e702cd.jpg",
+                   "url": "2a5dd4a049eb08c57f15369180e702cd.jpg"
+
+                  }
+                },
+                  "question_stages": {
+                      "1": {
+                        "47": {
+                          "question": {
+                            "html": "Hverslags litur er &aacute; &thorn;esu hj&oacute;li?",
+                            "value": "Hverslags litur er á þesu hjóli?",
+                            "format": "plaintext"
+                          }
+                        }
+                      }
+                    },
+                "tags": [
+                  {
+                    "id": "21",
+                    "label": "Janita"
+                  },
+                  {
+                    "id": "13",
+                    "label": "Jarno"
+                  },
+                  {
+                    "id": "12",
+                    "label": "Heidi"
+                  },
+                  {
+                    "id": "33",
+                    "label": "Elmo"
+                  },
+                  {
+                    "id": "41",
+                    "label": "Patrik"
+                  }
+                ]
+              },
+                "team": {
+                    "1": {
+                      "image": "https://s3-eu-west-1.amazonaws.com/agitator-image-host/kokeilunpaikka/c6788256-8467-45d2-bf35-471b54b63527.jpg",
+                      "profile_id": 1,
+                      "first_name": "Admin",
+                      "last_name": "Dev Team"
+                    }
+                  },
+              "my_relationships": [
+                 "like"
+              ],
+              "like_count": 22,
+              "acl": [
+                "view",
+                "edit",
+                "admin"
+              ]
+            }
+
+
+## Experiment funding [/experiments/{experiment_id}/funding/]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+
+### Update Funding [PATCH]
+
+Set the funding options for experiment. Method PATCH means partial data can be submitted, and what is submitted is updated.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+                    {
+                        "goal": 22000,
+                        "currency": "EUR",
+                        "sources": {
+                          "state": {
+                            "raised": 1230
+                            },
+                            "organizations": {
+                                "raised": 12
+                            },
+                            "crowd": {
+                                "api": "https://mesenaatti-agitator.karolina.io/agitator/",
+                                "campaign_id": 201
+                            }
+                        }
+                    }
+
++ Response 200 (application/json)
+
+
+## Experiment like [/experiments/{experiment_id}/likes/]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+
+### Add like [POST]
+
+Like an experiment
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
++ Response 200 (application/json)
+
+### Remove like [DELETE]
+
+Unlike an experiment
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
++ Response 200 (application/json)
+
+
+## Experiment settings [/experiments/{experiment_id}/settings/]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+
+### Update settings [PATCH]
+
+If disabled is set, the experiment will be "deleted". The show_in specifies places where that experiment should be shown.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+                {
+                    "settings": {
+                        "stage": 4,
+                        "funding_currency": "EUR",
+                        "disabled": true,
+                        "show_in": {
+                          "index": true
+                       },
+                       "geographic_location": "Miami"
+                    }
+                }
+
++ Response 200 (application/json)
+
+
+## Custom language [/experiments/{experiment_id}/custom_language/{lang_code}/]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+    + lang_code (string) - The language code of the lang to be updated
+
+
+### Update custom language [PATCH]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+    + Body
+
+            {
+              "custom_language": {
+                "creator_biography": {
+                  "value": "<h1>The story of the life of the creator</h1>",
+                  "format": "html"
+                },
+                "additional_thoughts": {
+                  "value": "Here's what some people think of this project",
+                  "format": "plaintext"
+                }
+              }
+            }
+
++ Response 200 (application/json)
+
+
+## Default language [/experiments/{experiment_id}/language/{lang_code}/]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+    + lang_code (string) - The language code of the lang to be updated
+
+
+### Update language [PATCH]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+            {
+              "language": {
+                "title": {
+                  "value": "My great experiment"
+                },
+                "short_description": {
+                  "value": "Some more info on that experiment."
+                },
+                "owner_name": {
+                  "value": "Mr. John Experiment."
+                }
+              }
+            }
+
++ Response 200 (application/json)
+
+
+## Images collection [/experiments/{experiment_id}/image_collection/]
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+
+
+### Update image collection [PATCH]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+            {
+              "image_collection": {
+                "main": {
+                  "filename": "lkj-lkjsdflkj-lkjasf.jpg"
+                },
+                "author_photo": {
+                  "filename": "dflkj-lkjasf.png"
+                }
+              }
+            }
+
++ Response 200 (application/json)
+
+## Experiment links  [/experiments/{experiment_id}/links/]
+
+### Set links for experiment [POST]
+
+This method replaces the experiment`'`s current links with the supplied ones.
+Any previously set links that are not sent along will be destroyed.
+The protocol (http://) part of the url is not obligatory.
+In case the protocol is not provided, it will be added automatically on the server-side.
+
++ Parameters
+    + experiment_id (string) - ID of the experiment
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Body
+
+            {
+                "links": [
+                    {
+                        "url": "http://www.mysite.com/mypage",
+                        "title": "My awesome page"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+# Group Users
+
+## Users [/users/]
+
+The visitors of your website are considered guests until they authenticate (log in). Once authenticated, they become users. An administrator is a type of a user that has higher privileges that other users and has access to some settings that are hidden to normal users.
+
+### Create a new user [POST]
+
+Creates a new user. Returns an authentication token for that user.
+
+Possible errors:
+* Email already in use
+* Email invalid
+
++ Request (application/json)
+    + Attributes (Create user Request)
+
++ Response 200 (application/json)
+    + Attributes (Get users tokens Response)
+
++ Request email already in use (application/json)
+    + Attributes (Create user Request)
+
++ Response 500 (application/json)
+    + Attributes (Create user email exists Response)
+
++ Request wrong email format (application/json)
+    + Attributes
+      + Include Create user Request
+      + email: example_email.com
+
++ Response 500 (application/json)
+    + Attributes (Create user invalid email Response)
+
+## Users tokens [/users/tokens/]
+
+### Generate a token for a user [POST]
+
+Generates an authentication token for a user. You can use that token in subsequent requests to authorize by placing the token in the **Authorization** header, like so:
+
+`Authorization:Bearer <JWToken>`
+
+Possible errors:
+* User does not exist in the system
+* Wrong password
+* Missing password
+* Not a valid email
+
++ Request (application/json)
+    + Attributes (Get users tokens Request)
+
++ Response 200 (application/json)
+    + Attributes (Get users tokens Response)
+
++ Request non-existing user (application/json)
+    + Attributes (Get users tokens Request)
+      + email: example12345@email.comm
+
++ Response 401 (application/json)
+    + Attributes (Get users tokens wrong credentials no user Response)
+
++ Request wrong password (application/json)
+    + Attributes (Get users tokens Request)
+      + password: password1234
+
++ Response 401 (application/json)
+    + Attributes (Get users tokens wrong credentials incorrect Response)
+
++ Request wrong email format (application/json)
+    + Attributes
+      + Include Get users tokens Request
+      + email: example_email.com
+
++ Response 400 (application/json)
+    + Attributes (Get users tokens error email invalid Response)
+
++ Request no password provided (application/json)
+    + Attributes (User email base)
+
++ Response 400 (application/json)
+    + Attributes (Get users tokens error no password Response)
+
+## Users password resets [/users/password_resets/]
+
+### Send password reset email [POST]
+
+Sends an email with a password reset link. This link contains a _password reset token_. A user can use that link to reset his password.
+
+Possible errors:
+* User does not exist in the system
+* Not a valid email
+
++ Request (application/json)
+    + Attributes (Send password reset email Request)
+
++ Response 200 (application/json)
+    + Attributes (Status success)
+
++ Request non-used email (application/json)
+    + Attributes
+        + Include Send password reset email Request
+        + email: example12345@email.com
+
++ Response 404 (application/json)
+    + Attributes (No user found error Response)
+
++ Request wrong email format (application/json)
+    + Attributes
+      + Include Get users tokens Request
+      + email: example_email.com
+
++ Response 400 (application/json)
+    + Attributes (Get users tokens error email invalid Response)
+
+## Users password changes [/users/password_changes/]
+
+### Change a password [POST]
+
+In order to change the password, you need to first obtain a _password reset token_ (see [Send password reset email](#reference/users/users-password-resets/send-password-reset-email)).
+
+Possible errors:
+* Reached rate limit
+* Token is not signed
+* The email does not match requesting email
+
++ Request (application/json)
+    + Attributes (Change a password Request)
+
++ Response 200 (application/json)
+    + Attributes (Status success)
+
++ Request over rate limit (application/json)
+    + Attributes (Change a password Request)
+
++ Response 500 (application/json)
+    + Attributes (Rate limit error Response)
+
++ Request token not signed (application/json)
+    + Attributes (Change a password Request)
+      + password_reset_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTY5NjE2MTgsInVzZXJfaWQiOjF9.luUUbwE_hvl5mHumWY0wGsyDhhA3OB4arnhnhjuhy76
+
++ Response 500 (application/json)
+    + Attributes (Status error)
+
++ Request over rate limit (application/json)
+    + Attributes (Change a password Request)
+      + email: different_email@example.com (string)
+
++ Response 500 (application/json)
+    + Attributes (Rate limit error Response)
+
+## Users previews [/users/preview/{?limit,offset}]
+
++ Parameters
+    + limit: 100 (number, optional) - How many users to fetch
+    + offset: 50 (number, optional) - Where to begin
+
+### Get users previews [GET]
+
+Allows you to fetch an array of users. The returned data includes the basic information about each user, such as user id, name, short description and profile image url. You can use the **limit** and **offset** parameters to optimize the page loading time when your user base grows.
+
++ Request (application/json)
+
++ Response 200 (application/json)
+    + Attributes (Get users previews Response)
+
+## Users profile [/users/{user_id}/profile]
+
++ Parameters
+    + user_id: 1 (string) - ID of the user
+
+### Get users profile [GET]
+
+Allows you to fetch a complete profile of a user. You need to provide the user id. You may provide an **Authorization** header. The response only includes the value for the key **email** if you provide an admin **Authorization** header.
+
+Possible errors:
+* Authorization header is invalid
+* User does not exist
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
++ Response 200 (application/json)
+    + Attributes (Get users profile Response)
+
++ Request non-existing user (application/json)
+
++ Response 404 (application/json)
+    + Attributes (Cannot find user error Response)
+
++ Request invalid authorization (application/json)
+    + Headers
+
+              Authorization: Bearer <JWToken>
+
++ Response 500 (application/json)
+    + Attributes (Authentication incorrect error 2 Response)
+
+## My password [/users/me/password]
+
+### Change my password [POST]
+
+Allows a user to change his password. You need to provide an **Authorization** header for that user. There is no error if the new password is equal to the previous password.
+
+Possible errors:
+* Authorization header is not provided
+* Authorization header is invalid
+
++ Request  (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Attributes (Change my password Request)
+
++ Response 200 (application/json)
+    + Attributes (Status success)
+
++ Request without authorization (application/json)
+
++ Response 401 (application/json)
+    + Attributes (Authentication error 4 Response)
+
++ Request invalid authorization (application/json)
+    + Headers
+
+              Authorization: Bearer <JWToken>
+
++ Response 500 (application/json)
+    + Attributes (Authentication incorrect error 2 Response)
+
+## My tags [/users/me/tags/]
+
+### Set my tags [POST]
+
+Allows you to set tags for your profile. The existing tags are replaced with the new tags. For example, if you want to add tags, you need to fetch existing tags first and send them together with the additional tags.
+
+Possible errors:
+* Authorization header is not provided
+* Authorization header is invalid
+* The tag does not exist
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer <JWToken>
+
+    + Attributes (Set my tags Request)
+
++ Response 200 (application/json)
+    + Attributes (Set my tags Response)
+
++ Request without authorization (application/json)
+
++ Response 401 (application/json)
+    + Attributes (Authentication error 4 Response)
+
++ Request invalid authorization (application/json)
+    + Headers
+
+              Authorization: Bearer <JWToken>
+
++ Response 500 (application/json)
+    + Attributes (Authentication incorrect error 2 Response)
+
++ Request non-existing tags (application/json)
+    + Headers
+
+              Authorization: Bearer <JWToken>
+
+    + Attributes (Set my tags Request)
+
++ Response 500 (application/json)
+    + Attributes
+      + Include Status error
+      + message: No query results for model [Karolina\\Database\\Table\\Tag] 234 (string, fixed)
+
+# Data Structures
+
+## Status success (object, fixed)
++ status: success (string)
+
+## Status error (object, fixed)
++ status: error (string)
+
+## Status error rate limit (object, fixed)
++ status: rate_limit (string)
+
+## Status error authorization required (object, fixed)
++ status: authorization_required (string)
+
+## Status error user not found (object, fixed)
++ status: user_not_found (string)
+
+## Status error no user found (object, fixed)
++ status: no_user_found (string)
+
+## Status error email exists (object, fixed)
++ status: email_already_exists (string)
+
+## Status error missing credentials (object, fixed)
++ status: missing_credentials (string)
+
+## Status error wrong credentials (object, fixed)
++ status: wrong_credentials (string)
+
+## Status error invalid email (object, fixed)
++ status: invalid_email (string)
+
+## Status error invalid arguments (object, fixed)
++ status: invalid_arguments (string)
+
+## Error message rate limit (object, fixed)
++ message: `This action is rate limited. It can only happen 1 time(s) within 86400 seconds.` (string)
+
+## Error message didnt work (object, fixed)
++ message: `Sorry, didn't work` (string)
+
+## Error message password provided (object, fixed)
++ message: `Password must be provided.` (string)
+
+## Error message email invalid (object, fixed)
++ message: `Not a valid e-mail` (string)
+
+## Error message invalid email (object, fixed)
++ message: `E-mail address is not valid.` (string)
+
+## Error message short first name (object, fixed)
++ message: `First name must be at least 2 characters` (string)
+
+## Error message short last name (object, fixed)
++ message: `Last name must be at least 2 characters` (string)
+
+## Error message email exists (object, fixed)
++ message: `A user with this e-mail address already exists.` (string)
+
+## Error message credentials no user (object, fixed)
++ message: `User does not exist.` (string)
+
+## Error message credentials incorrect (object, fixed)
++ message: `Password or e-mail incorrect, or user does not exist.` (string)
+
+## Error message cant get user (object, fixed)
++ message: `Cant get user` (string)
+
+## Error message cant find user (object, fixed)
++ message: `Can't find user` (string)
+
+## Error message could not find (object, fixed)
++ message: `Could not find user` (string)
+
+## Error message problems (object, fixed)
++ message: `Problems with platform authentication: Wrong signature - Please contact administrator.` (string)
+
+## Error message wrong signature (object, fixed)
++ message: `Wrong signature` (string)
+
+## Error message not authorized (object, fixed)
++ message: `Sorry, you are not authorized to do this.` (string)
+
+## Error message logged in (object, fixed)
++ message: `You must be logged in to do this.` (string)
+
+## Exception type Karolina exception (object, fixed)
++ exception_type: `Karolina\\Exception` (string)
+
+## Success message updated ok (object, fixed)
++ message: `updated ok` (string)
+
+## Success message tags updated (object, fixed)
++ message: `Tags have been updated.` (string)
+
+## Success message action successful (object, fixed)
++ message: `Action successful` (string)
+
+## Success message action successful 2 (object, fixed)
++ message: `Action successful.` (string)
+
+## Success message roger (object, fixed)
++ message: `roger` (string)
+
+## Tag base (object, fixed-type)
++ label: tech (string)
++ id: 1 (string)
+
+## Link base (object, fixed-type)
++ url: http://www.google.com (string)
++ title: Google (string)
++ site: google.com (string)
+
+## User preview base (object, fixed-type)
++ user_id: 123 (string)
++ first_name: John (string)
++ last_name: Smith (string)
++ short_description: I like art. (string, nullable)
++ links (Links, optional)
++ tags (Tags, optional)
+
+## User email base (object, fixed-type)
++ email: example@example.com (string)
+
+## Image base (object, fixed-type)
++ filename: `495d427a-43de-48d7-9ffc-2a653e9c21a6.png` (string)
++ url: `https://s3-eu-west-1.amazonaws.com/agitator-image-host/kokeilunpaikka/495d427a-43de-48d7-9ffc-2a653e9c21a6.png`
+
+## User profile base (object, fixed-type)
++ profile
+  + Include User preview base
+  + long_description: <h1>This is who I am</h1> (string)
+  + experiments (Experiments previews, optional)
+  + email: example@example.com (string, nullable)
+  + image_collection
+      + profile (Image base)
+  + skills (Skills, optional)
+
+## Experiment preview base (object, fixed-type)
++ experiment_id: 1 (string)
++ stage: 0 (number)
++ title: My experiment (string)
++ short_description: A small experiment (string)
++ owner_name (string)
++ image (string)
+
+## Acl (array, fixed-type)
++ view (string)
++ edit (string)
++ admin (string)
+
+## Skills (array, fixed-type)
++ singing (string),
++ dancing (string),
++ climbing (string)
+
+## Experiments previews (array, fixed-type)
++ (Experiment preview base)
++ (Experiment preview base)
+  + experiment_id: 234 (string)
++ (Experiment preview base)
+  + experiment_id: 345 (string)
+  + stage: 1 (number)
++ (Experiment preview base)
+  + experiment_id: 456 (string)
+  + stage: 2 (number)
++ (Experiment preview base)
+  + experiment_id: 567 (string)
+  + stage: 3 (number)
++ (Experiment preview base)
+  + experiment_id: 678 (string)
+  + stage: 4 (number)
++ (Experiment preview base)
+  + experiment_id: 789 (string)
+  + stage: 5 (number)
+
+## Tags (array, fixed-type)
++ (Tag base)
++ (Tag base)
+  + id: 234 (string)
+  + label: art (string)
++ (Tag base)
+  + id: 345 (string)
+  + label: poetry (string)
++ (Tag base)
+  + id: 456 (string)
+  + label: future (string)
++ (Tag base)
+  + id: 567 (string)
+  + label: IoT (string)
+
+## Links (array, fixed-type)
++ (Link base)
++ (Link base)
+  + url: https://twitter.com/MomentsES (string)
+  + title: Moments en Español (string)
+  + site: twitter.com (string)
++ (Link base)
+  + url: https://www.youtube.com/channel/UCXAkilyHbXtCJmyUfNguNhg (string)
+  + title: Beer Bulli Youtube Channel (string)
+  + site: youtube.com (string)
++ (Link base)
+  + url: https://www.linkedin.com/in/daniplaninc/ (string)
+  + title (string)
+  + site: linkedin.com (string)
+
+## Users previews (array, fixed-type)
++ (User preview base)
+  + image (string, nullable)
++ (User preview base)
+  + image (string, nullable)
+  + user_id: 234 (string)
+  + first_name: Jack (string)
+  + short_description: Here to win (string)
++ (User preview base)
+  + image (string, nullable)
+  + user_id: 345 (string)
+  + first_name: Jill (string)
+  + short_description: Never give up! (string)
++ (User preview base)
+  + image (string, nullable)
+  + user_id: 456 (string)
+  + last_name: Stone (string)
+  + short_description: Searching for happines.. (string)
++ (User preview base)
+  + image (string, nullable)
+  + user_id: 567 (string)
+  + last_name: McLane (string)
+  + short_description: Die Hard fan (string)
+
+## Get users previews Response (object, fixed-type)
++ previews (Users previews)
++ Include Status success
+
+## Get users profile Response (object, fixed-type)
++ Include User profile base
++ Include Status success
+
+## Set my tags Response (object, fixed-type)
++ Include Status success
++ Include Success message tags updated
+
+## Get users tokens Response (object, fixed-type)
++ token (object)
+  + string: lkjsdsdjsdaf.lkjasdlfksdfj.laksjdflkjsadklj (string)
++ Include Status success
+
+## Get users tokens error Response (object, fixed)
++ Include Status error
++ Include Error message didnt work
+
+## Get users tokens wrong credentials no user Response (object, fixed)
++ Include Status error wrong credentials
+* Include Exception type Karolina exception
++ Include Error message credentials no user
+
+## Get users tokens wrong credentials incorrect Response (object, fixed)
++ Include Status error wrong credentials
+* Include Exception type Karolina exception
++ Include Error message credentials incorrect
+
+## Get users tokens error no password Response (object, fixed)
++ Include Status error missing credentials
++ Include Exception type Karolina exception
++ Include Error message password provided
+
+## Get users tokens error email invalid Response (object, fixed)
++ Include Status error missing credentials
+* Include Exception type Karolina exception
++ Include Error message email invalid
+
+## Create user email exists Response (object, fixed)
++ Include Status error
++ Include Error message email exists
+
+## Create user invalid email Response (object, fixed)
++ Include Status error invalid email
++ Include Error message invalid email
+
+## Create user short first Response (object, fixed)
++ Include Status error invalid arguments
++ Include Error message short first name
+
+## Create user short last Response (object, fixed)
++ Include Status error invalid arguments
++ Include Error message short last name
+
+## Cannot find user error Response (object, fixed)
++ Include Status error user not found
++ Include Error message cant find user
+
+## No user found error Response (object, fixed)
++ Include Status error no user found
++ Include Exception type Karolina exception
++ Include Error message could not find
+
+## Rate limit error Response (object, fixed)
++ Include Status error rate limit
++ Include Exception type Karolina exception
++ Include Error message rate limit
+
+## Authentication error Response (object, fixed)
++ Include Status error
++ Include Error message cant get user
+
+## Authentication error 2 Response (object, fixed)
++ Include Status error
++ Include Error message could not find
+
+## Authentication error 3 Response (object, fixed)
++ Include Status error
++ Include Error message not authorized
+
+## Authentication error 4 Response (object, fixed)
++ Include Status error authorization required
++ Include Error message logged in
+
+## Authentication incorrect error Response (object, fixed)
++ Include Status error
++ Include Error message problems
+
+## Authentication incorrect error 2 Response (object, fixed)
++ Include Status error
++ Include Error message wrong signature
+
+## Get users tokens Request (object)
++ Include User email base
++ password: password123 (string)
+
+## Create user Request (object)
++ Include Get users tokens Request
++ first_name: John (string)
++ last_name: Smith (string)
+
+## Send password reset email Request (object)
++ Include User email base
+
+## Change a password Request (object)
++ Include User email base
++ password_reset_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTczNTcyNTAsImNoYW5nZV9wYXNzX2Zvcl91c2VyX2lkIjo4fQ.7qOYIEqUqa7f4Js_kS82XZ7qpsg1wZwbcPZ7zSJsi1o (string)
++ new_password: 123456 (string)
+
+## Change my password Request (object)
++ new_password: 123123 (string)
+
+## Set my tags Request (object)
++ tags (array)
+  + 1 (string)
+  + 2 (string)
+  + 3 (string)

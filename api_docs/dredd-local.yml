@@ -1,0 +1,36 @@
+reporter: apiary
+custom:
+  apiaryApiKey: 81474e4f5eba9fc10f00c677d3c4144a
+  apiaryApiName: place-to-experiment
+dry-run: null
+hookfiles: hooks.js
+language: nodejs
+sandbox: false
+server: null
+server-wait: 3
+init: false
+names: false
+only: []
+output: []
+header: []
+sorted: false
+user: null
+inline-errors: false
+details: false
+method: []
+color: true
+level: info
+timestamp: false
+silent: false
+path: []
+hooks-worker-timeout: 5000
+hooks-worker-connect-timeout: 1500
+hooks-worker-connect-retry: 500
+hooks-worker-after-connect-wait: 100
+hooks-worker-term-timeout: 5000
+hooks-worker-term-retry: 500
+hooks-worker-handler-host: 127.0.0.1
+hooks-worker-handler-port: 61321
+config: ./dredd.yml
+blueprint: apiary.apib
+endpoint: 'http://place-to-experiment-local.dev/agitator'

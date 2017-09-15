@@ -1,0 +1,93 @@
+class_name: AcceptanceTester
+modules:
+   enabled:
+     - WebDriver:
+         url: https://sandbox.karolina.io/
+         browser: chrome
+         # window_size: maximize #currently broken in FF, will be fixed in ver. 55, to be released on 8.8.2017
+         wait: 30
+     - \Helper\Acceptance
+env:
+    solano-chrome:
+        modules:
+            config:
+                WebDriver:
+                    browser: chrome
+                    window_size: maximize
+    sandbox-chrome:
+        extensions:
+            enabled:
+                - Codeception\Extension\RunProcess:
+                    0: java -Dwebdriver.chrome.driver=tests/acceptance/bin/chromedriver.exe -jar tests/acceptance/bin/selenium-server-standalone-3.4.0.jar
+                    sleep: 5
+        modules:
+            config:
+                WebDriver:
+                    browser: chrome
+                    window_size: maximize
+    local-chrome:
+        extensions:
+            enabled:
+                - Codeception\Extension\RunProcess:
+                    0: java -Dwebdriver.chrome.driver=tests/acceptance/bin/chromedriver.exe -jar tests/acceptance/bin/selenium-server-standalone-3.4.0.jar
+                    sleep: 5
+        modules:
+            config:
+                WebDriver:
+                    url: http://place-to-experiment.dev/
+                    browser: chrome
+                    window_size: maximize
+    local-firefox:
+        extensions:
+            enabled:
+                - Codeception\Extension\RunProcess:
+                    0: java -Dwebdriver.gecko.driver=tests/acceptance/bin/geckodriver.exe -jar tests/acceptance/bin/selenium-server-standalone-3.4.0.jar
+                    sleep: 5
+        modules:
+            config:
+                WebDriver:
+                    url: http://place-to-experiment.dev/
+                    browser: firefox
+    local-ie:
+        extensions:
+            enabled:
+                - Codeception\Extension\RunProcess:
+                    0: java -Dwebdriver.ie.driver=tests/acceptance/bin/IEDriverServer.exe -jar tests/acceptance/bin/selenium-server-standalone-3.4.0.jar
+                    sleep: 5
+        modules:
+            config:
+                WebDriver:
+                    url: http://place-to-experiment.dev/
+                    browser: internet explorer
+                    window_size: maximize
+                    capabilities:
+                        # This deletes saved data (such as the token in local storage)
+                        ie.ensureCleanSession: true
+    local-edge:
+        extensions:
+            enabled:
+                - Codeception\Extension\RunProcess:
+                    0: java -Dwebdriver.edge.driver=tests/acceptance/bin/MicrosoftWebDriver.exe -jar tests/acceptance/bin/selenium-server-standalone-3.4.0.jar
+                    sleep: 5
+        modules:
+            config:
+                WebDriver:
+                    url: http://place-to-experiment.dev/
+                    browser: MicrosoftEdge
+                    window_size: maximize
+    local-safari:
+        extensions:
+            enabled:
+                - Codeception\Extension\RunProcess:
+                    0: java -jar tests/acceptance/bin/selenium-server-standalone-3.4.0.jar
+                    sleep: 5
+        modules:
+            config:
+                WebDriver:
+                    url: http://place-to-experiment.dev/
+                    browser: safari
+                    window_size: maximize
+                    capabilities:
+                        # This deletes saved data (such as the cookies). cannot get this to work though..
+                        safari.options:
+                            - cleanSession: true

@@ -1,0 +1,17 @@
+key: "sandbox"
+name: "Sandbox"
+company_name: "Demo company Inc"
+VAT_id: "VAT: XXXXX"
+registration_id: "Kt: YYYYY-KKKK"
+languages:
+  EN: English
+  NO: Norsk
+country_to_lang:
+  no: NO
+email_info: admin@karolinafund.com
+email_noreply: no-reply@karolinafund.com
+google_analytics_id: "UA-xxxxxxxx-1"
+google_analytics_service_id: "ga:xxxxxxxxx"
+currency: USD
+custom_language: "yes"
+is_sandbox: "yes"

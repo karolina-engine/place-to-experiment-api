@@ -1,0 +1,30 @@
+{
+    "name": "place-to-experiment-api-docs",
+    "version": "1.0.0",
+    "description": "Place to experiment API docs, created by Karolina fund",
+    "author": "Dani Planinc <dani.planinc@gmail.com>",
+    "contributors": [{
+            "name": "Dani Planinc",
+            "email": "dani.planinc@gmail.com"
+        },
+        {
+            "name": "Arnar Sigurdsson",
+            "email": "arnar@karolinafund.com"
+        }
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/karolina-engine/place-to-experiment-api.git"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "dredd": "^3.5.0",
+        "request-promise-native": "^1.0.4",
+        "request": "^2.81.0"
+    },
+    "engines": {
+        "node": ">= 4.0.0",
+        "npm": ">= 3.0.0"
+    }
+}
