@@ -1,5 +1,7 @@
 Place to Experiment API
 ========
+## Note
+This project was developed for a particular implementation. The code is being relesased as OS. However, the following setup guide and the whole documentation and the setup process is still very rudimentary.
 
 ## Environmental variables
 
