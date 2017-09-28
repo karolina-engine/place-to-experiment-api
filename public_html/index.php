@@ -75,34 +75,6 @@ if (getenv('protocol') == 'https' and $current_protocol != 'https') {
 }
 
 define('ENVIRONMENT',  getenv('environment'));
-
-
-// Rudimentary password protection for dev sites
-if (getenv('password_protected') === "yes") {
-
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-	    header('WWW-Authenticate: Basic realm="Development"');
-	    header('HTTP/1.0 401 Unauthorized');
-	    echo 'Development';
-	    exit;
-	} else {
-
-		if ($_SERVER['PHP_AUTH_USER'] === "development" and $_SERVER['PHP_AUTH_PW'] === "developerz") {
-
-		} else {
-
-		    header('WWW-Authenticate: Basic realm="Development"');
-		    header('HTTP/1.0 401 Unauthorized');
-		    echo 'Development';
-		    exit;
-
-
-		}
-
-	}
-
-}
-
 define('DATABASE_HOSTNAME',  getenv('database_hostname'));
 define('DATABASE_PASSWORD',  getenv('database_password'));
 define('DATABASE_NAME',  getenv('database_name'));
