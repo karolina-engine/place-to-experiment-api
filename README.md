@@ -68,7 +68,6 @@ Place to Experiment uses [Composer] (https://getcomposer.org/) to manage depende
 * [Composer] (https://getcomposer.org/)
 * LAMP stack (such as [XAMPP] (https://www.apachefriends.org/index.html) or [Laragon] (https://laragon.org/))
   * MySQL 5.7
-  * PHP 5.6
 * PHP extensions you need to activate:
   * php_fileinfo (needed for server side image validation)
 
@@ -76,7 +75,7 @@ Place to Experiment uses [Composer] (https://getcomposer.org/) to manage depende
 * Run **composer install** to get dependencies
 * Set **public_html/** as the *Document root* in your VirtualHost configuration file.
 * Prepare a database
-  * Import the sample database to your local database server.
+  * Import the sample database to your local database server (src/Database/schema.sql)
   * depending on your settings, you may need to disable [SQL STRICT mode](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sql-mode-strict)
     * Usually, you can do that by modifying your **my.ini** file; find the line for *sql_mode* and remove `STRICT_ALL_TABLES` or `STRICT_TRANS_TABLES`
 * Set the following ENV variables in your Apache settings:
