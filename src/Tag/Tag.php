@@ -1,61 +1,54 @@
 <?php
 
 namespace Karolina\Tag;
+
 use Karolina\Language\LanguageFields;
 
-Class Tag {
+class Tag
+{
+    private $id;
+    private $langFields;
+    private $man;
 
-	private $id;
-	private $langFields;
-	private $man;
+    public function __construct()
+    {
+        $this->id = null;
 
-	public function __construct () {
+        $this->langFields = new LanguageFields();
+    }
 
-		$this->id = NULL;
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
-		$this->langFields = new LanguageFields();
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	}
+    public function getLabelDocument()
+    {
+        return $this->langFields->getDocument();
+    }
 
-	public function setId ($id) {
+    public function getLabelLanguageFields()
+    {
+        return $this->langFields->getArray();
+    }
 
-		$this->id = $id;
+    public function setLabelLanguageFields($langFieldsArray)
+    {
+        $this->langFields =  new \Karolina\Language\LanguageFields($langFieldsArray);
+    }
 
-	}
+    public function setLabel($value, $langCode = "en")
+    {
+        $this->langFields->set('label', $langCode, $value, 'plaintext');
+    }
 
-	public function getId () {
-
-		return $this->id;
-
-	}
-
-	public function getLabelDocument () {
-
-		return $this->langFields->getDocument();
-	}
-
-	public function getLabelLanguageFields () {
-
-		return $this->langFields->getArray();
-
-	}
-
-	public function setLabelLanguageFields ($langFieldsArray) {
-
-		$this->langFields =  new \Karolina\Language\LanguageFields($langFieldsArray);
-
-	}
-
-	public function setLabel ($value, $langCode = "en") {
-
-		$this->langFields->set('label', $langCode, $value, 'plaintext');
-
-	}
-
-	public function getLabel ($langCode = "en") {
-
-		return $this->langFields->get('label', $langCode, 'Label')->getValue();
-
-	}
-
+    public function getLabel($langCode = "en")
+    {
+        return $this->langFields->get('label', $langCode, 'Label')->getValue();
+    }
 }

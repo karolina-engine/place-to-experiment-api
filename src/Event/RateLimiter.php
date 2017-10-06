@@ -8,47 +8,39 @@ This rate limiter uses a database table (via eloquent model) to store event rate
 
 */
 
-Class RateLimiter {
+class RateLimiter
+{
+    public function happen($happenedKey, $limit, $timeframe)
+    {
 
-	function happen ($happenedKey, $limit, $timeframe) {
+        // Clean up expired events in the database
+        $this->cleanExpired();
 
-		// Clean up expired events in the database
-		$this->cleanExpired();
+        $events = \Karolina\Database\Table\RateLimitedEvent::where('set_time', ">", time() - $timeframe)->where('key', $happenedKey)->first();
+        
+        if (count($events)) {
+            if ($events->allowed_occurances < 1) {
+                throw new \Karolina\Exception('This action is rate limited. It can only happen '.$limit.' time(s) within '.$timeframe.' seconds.', 'rate_limit');
+            } else {
+                return true;
+                $events->allowed_occurances = $events->allowed_occurances - 1;
+                $events->save();
+            }
+        } else {
+            $this->create($happenedKey, $limit, $timeframe);
+            return true;
+        }
+    }
 
-		$events = \Karolina\Database\Table\RateLimitedEvent::where('set_time', ">", time() - $timeframe)->where('key', $happenedKey)->first();
-		
-		if (count($events)) {
+    public function cleanExpired()
+    {
+        $storeOldForSecs = 60 * 60;
 
-			if ($events->allowed_occurances < 1) {
+        $deletedRows = \Karolina\Database\Table\RateLimitedEvent::where('expire_time', "<", time() - $storeOldForSecs)->delete();
+    }
 
-				throw new \Karolina\Exception('This action is rate limited. It can only happen '.$limit.' time(s) within '.$timeframe.' seconds.', 'rate_limit');
-
-			} else {
-
-				return true;
-				$events->allowed_occurances = $events->allowed_occurances - 1;
-				$events->save();
-
-			}
-
-		} else {
-
-			$this->create($happenedKey, $limit, $timeframe);
-			return true;
-		}
-
-	}
-
-	function cleanExpired () {
-
-		$storeOldForSecs = 60 * 60;
-
-		$deletedRows = \Karolina\Database\Table\RateLimitedEvent::where('expire_time', "<", time() - $storeOldForSecs)->delete();
-
-	}
-
-	function create ($happenedKey, $limit, $timeframe) {
-
+    public function create($happenedKey, $limit, $timeframe)
+    {
         $event = new \Karolina\Database\Table\RateLimitedEvent();
 
         $event->key = $happenedKey;
@@ -59,8 +51,5 @@ Class RateLimiter {
 
         $event->save();
         return true;
-
-
-	}
-	
+    }
 }

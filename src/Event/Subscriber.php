@@ -2,10 +2,9 @@
 
 namespace Karolina\Event;
 
-interface Subscriber {
+interface Subscriber
+{
+    public function handle($aDomainEvent);
 
-	public function handle ($aDomainEvent);
-
-	public function isSubscribedTo ($aDomainEvent);
-
+    public function isSubscribedTo($aDomainEvent);
 }

@@ -2,84 +2,73 @@
 
 namespace Karolina;
 
-Class Environment {
+class Environment
+{
+    private $loadedEnvVariables = array();
+    public $dotenv;
 
-	private $loadedEnvVariables = array();
-	public $dotenv;
+    public function __construct($dotenv)
+    {
+        $this->dotenv = $dotenv;
+    }
 
-    public function __construct ($dotenv) {
+    public function loadEnvVariablesByHostname($hostname)
+    {
+        $hostname = strtolower($hostname);
 
-		$this->dotenv = $dotenv;
+        try {
+            $dsn = "mysql:host=".getenv('database_hostname').";";
+            $dsn .= "dbname=environments";
 
-	}
-
-	public function loadEnvVariablesByHostname ($hostname) {
-
-		$hostname = strtolower($hostname);
-
-		try {
-			$dsn = "mysql:host=".getenv('database_hostname').";";
-			$dsn .= "dbname=environments";
-
-			$pdo = new \PDO($dsn, getenv('database_user'), getenv('database_pass'));
-			$stmt = $pdo->prepare('SELECT * 
+            $pdo = new \PDO($dsn, getenv('database_user'), getenv('database_pass'));
+            $stmt = $pdo->prepare('SELECT * 
 				FROM variables 
 		        LEFT JOIN hosts 
 		            ON (hosts.collection=variables.collection) 
 				WHERE hostname = :hostname');
-			$stmt->bindParam(':hostname', $hostname);
-			$stmt->execute();
-			$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			$this->loadEnvVariablesFromArray($result);
+            $stmt->bindParam(':hostname', $hostname);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $this->loadEnvVariablesFromArray($result);
+        } catch (\PDOException $e) {
+            if (getenv('environment') == 'development') {
+                echo 'Connection failed: ' . $e->getMessage();
+            }
+        } catch (\Exception $e) {
+            if (getenv('environment') == 'development') {
+                echo 'Connection failed: ' . $e->getMessage();
+            }
+        }
+    }
 
-		} catch (\PDOException $e) {
-			if (getenv('environment') == 'development') {
-			    echo 'Connection failed: ' . $e->getMessage();
-			}
-		}
-		catch (\Exception $e) {
-			if (getenv('environment') == 'development') {
-			    echo 'Connection failed: ' . $e->getMessage();
-			}
-		}
-
-	}
-
-	private function loadEnvVariablesFromArray (array $variables) {
-
-		foreach ($variables as $key => $variable) {
-			$this->loadedEnvVariables[$key] = $variable;
-		}
-
-	}
+    private function loadEnvVariablesFromArray(array $variables)
+    {
+        foreach ($variables as $key => $variable) {
+            $this->loadedEnvVariables[$key] = $variable;
+        }
+    }
 
 
-	public function setEnvVariablesFromArray (array $variables) {
+    public function setEnvVariablesFromArray(array $variables)
+    {
+        foreach ($variables as $name => $value) {
+            $this->setEnvVariable($name, $value);
+        }
+    }
 
-		foreach ($variables as $name => $value) {
-			$this->setEnvVariable($name, $value);
-		}
+    private function setEnvVariable($varible, $value)
+    {
+        putenv("$varible=$value");
+    }
 
-	}
+    public function setLoadedEnvVariables()
+    {
 
-	private function setEnvVariable ($varible, $value) {
+        // Set loaded
+        foreach ($this->loadedEnvVariables as $variable) {
+            $this->setEnvVariable($variable['name'], $variable['value']);
+        }
 
-		putenv("$varible=$value");
-
-	}
-
-	public function setLoadedEnvVariables () {
-
-		// Set loaded
-		foreach ($this->loadedEnvVariables as $variable) {
-			$this->setEnvVariable($variable['name'], $variable['value']);
-
-		}
-
-		$this->dotenv->load();
-
-	}
-
-
-
+        $this->dotenv->load();
+    }
 }

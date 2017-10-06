@@ -2,75 +2,65 @@
 
 namespace Karolina\Tag;
 
-Class TagRepository {
+class TagRepository
+{
+    public function save(Tag $tag)
+    {
 
-	public function save (Tag $tag) {
+        // First we must save the tag model to get an ID
+        if ($tag->getId() == null) {
 
-		// First we must save the tag model to get an ID
-		if ($tag->getId() == NULL) { 
+            // Has not been saved before
+            $model = new \Karolina\Database\Table\Tag;
+        } else {
+            $model = \Karolina\Database\Table\Tag::get($tag->getId());
+        }
 
-			// Has not been saved before
-			$model = new \Karolina\Database\Table\Tag;
+        $model->label_language = json_encode($tag->getLabelLanguageFields());
 
-		} else {
+        $model->save();
+    }
+    
 
-			$model = \Karolina\Database\Table\Tag::get($tag->getId());
+    public function getById($id)
+    {
+        $model = \Karolina\Database\Table\Tag::findOrFail($id);
 
-		}
+        $tag = new Tag();
 
-		$model->label_language = json_encode($tag->getLabelLanguageFields());
+        $tag->setLabelLanguageFields(json_decode($model->label_language, true));
 
-		$model->save();
+        $tag->setId($model->tag_id);
 
-	}
-	
-
-	public function getById ($id) {
-
-		$model = \Karolina\Database\Table\Tag::findOrFail($id);
-
-		$tag = new Tag();
-
-		$tag->setLabelLanguageFields(json_decode($model->label_language, true));
-
-		$tag->setId($model->tag_id);
-
-		return $tag;
-
-	}
+        return $tag;
+    }
 
 
 
-	public function getAll () {
+    public function getAll()
+    {
+        $models = \Karolina\Database\Table\Tag::all();
 
-		$models = \Karolina\Database\Table\Tag::all();
+        $tags = array();
+        foreach ($models as $model) {
+            $tag = new Tag();
+            $tag->setLabelLanguageFields(json_decode($model->label_language, true));
+            $tag->setId($model->tag_id);
+            $tags[] = $tag;
+        }
 
-		$tags = array();
-		foreach ($models as $model) {
+        return $tags;
+    }
 
-			$tag = new Tag();
-			$tag->setLabelLanguageFields(json_decode($model->label_language, true));
-			$tag->setId($model->tag_id);
-			$tags[] = $tag;
+    public function getTagsFromTagIdCollection($tagIdCollection)
+    {
+        $tags = array();
 
-		}
+        foreach ($tagIdCollection as $tagId) {
+            $tag = $this->getById($tagId);
+            $tags[] = $tag;
+        }
 
-		return $tags;
-
-	}
-
-	public function getTagsFromTagIdCollection ($tagIdCollection) {
-
-		$tags = array();
-
-		foreach ($tagIdCollection as $tagId) {
-
-			$tag = $this->getById($tagId);
-			$tags[] = $tag;
-		}
-
-		return $tags;
-
-	}
-
+        return $tags;
+    }
 }

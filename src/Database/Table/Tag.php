@@ -5,8 +5,8 @@ namespace Karolina\Database\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-Class Tag extends Model {
-
+class Tag extends Model
+{
     protected $table = 'kf_tags';
     protected $primaryKey = 'tag_id';
 
@@ -17,6 +17,5 @@ Class Tag extends Model {
         static::addGlobalScope('active', function (Builder $builder) {
             $builder->where('active', '=', 1);
         });
-    }        
-
+    }
 }

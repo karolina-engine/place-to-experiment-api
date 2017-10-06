@@ -1,42 +1,33 @@
 <?php
 namespace Karolina\User;
 
-Class Skills {
-	
-	private $skills = array();
+class Skills
+{
+    private $skills = array();
 
-	public function set (array $skills) {
+    public function set(array $skills)
+    {
+        $newSkills = array();
 
+        foreach ($skills as $skill) {
+            $skill = strtolower($skill); // lowercase
 
-		$newSkills = array();
+            if ($this->isValid($skill) and !in_array($skill, $newSkills)) {
+                $newSkills[] = $skill;
+            }
+        }
 
-		foreach ($skills as $skill) {
+        $this->skills = $newSkills;
+    }
 
-			$skill = strtolower($skill); // lowercase
+    private function isValid($skill)
+    {
+        return true;
+    }
 
-			if ($this->isValid($skill) and !in_array($skill, $newSkills)) {
-
-				$newSkills[] = $skill;
-
-			}
-
-		}
-
-		$this->skills = $newSkills;
-
-	}
-
-	private function isValid ($skill) {
-
-		return true;
-
-	}
-
-	
-	public function getAll () {
-
-		 return $this->skills;
-
-	}
-
+    
+    public function getAll()
+    {
+        return $this->skills;
+    }
 }

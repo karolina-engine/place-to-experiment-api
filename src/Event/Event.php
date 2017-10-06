@@ -3,9 +3,6 @@
 namespace Karolina\Event;
 
 interface Event
-
 {
-
-	public function occurredOn(); 
-
- }
+    public function occurredOn();
+}

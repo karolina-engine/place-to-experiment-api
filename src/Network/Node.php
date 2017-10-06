@@ -2,27 +2,24 @@
 
 namespace Karolina\Network;
 
-Class Node {
+class Node
+{
+    private $type;
+    private $id;
 
-	private $type;
-	private $id;
+    public function __construct($type, $id = null)
+    {
+        $this->type = $type;
+        $this->id = $id;
+    }
 
-	public function __construct ($type, $id = NULL) {
+    public function getNetworkType()
+    {
+        return $this->type;
+    }
 
-		$this->type = $type;
-		$this->id = $id;
-
-	}
-
-	function getNetworkType () {
-
-		return $this->type;
-	}
-
-	function getId () {
-
-		return $this->id;
-		
-	}
-
+    public function getId()
+    {
+        return $this->id;
+    }
 }
