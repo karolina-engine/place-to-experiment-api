@@ -2,45 +2,35 @@
 
 namespace Karolina\Setting;
 
-Class SettingsGroup {
-	
-	private $variables = [];
+class SettingsGroup
+{
+    private $variables = [];
 
-	public function set ($variableName, $value) {
+    public function set($variableName, $value)
+    {
+        $this->variables[$variableName] = $value;
+    }
 
-		$this->variables[$variableName] = $value;
+    public function get($variableName)
+    {
+        if (isset($this->variables[$variableName])) {
+            return $this->variables[$variableName];
+        } else {
+            throw new \Exception('Setting not found for variable: '.htmlentities($variableName));
+        }
+    }
 
-	}
+    public function getAll()
+    {
+        return $this->variables;
+    }
 
-	public function get ($variableName) {
-
-		if (isset($this->variables[$variableName])) {
-
-			return $this->variables[$variableName];
-
-		} else {
-
-			throw new \Exception ('Setting not found for variable: '.htmlentities($variableName));	
-		}
-
-	}
-
-	public function getAll () {
-
-		return $this->variables;
-	}
-
-	public function variableIsSet ($variableName) {
-
-		if (isset($this->variables[$variableName])) {
-
-			return true;
-
-		} else {
-
-			return false;
-		}
-
-
-	}
+    public function variableIsSet($variableName)
+    {
+        if (isset($this->variables[$variableName])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

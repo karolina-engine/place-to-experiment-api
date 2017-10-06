@@ -8,25 +8,21 @@
 
 namespace Karolina\API\v1;
 
-
 use Karolina\User\UserPreview;
 
 class UserPreviewResponse
 {
-
     private $userPreview;
     private $imgStorageUrl;
 
     public function __construct(UserPreview $userPreview, $imgStorageUrl)
     {
-
         $this->userPreview = $userPreview;
         $this->imgStorageUrl = $imgStorageUrl;
-
     }
 
-    public function get () {
-
+    public function get()
+    {
         $user = $this->userPreview;
         $response = array();
 
@@ -41,12 +37,11 @@ class UserPreviewResponse
             $response['image'] = $this->imgStorageUrl."/".$user->getProfileImage();
             $response['image_filename'] = $user->getProfileImage();
         } else {
-            $response['image'] = NULL;
-            $response['image_filename'] = NULL;
+            $response['image'] = null;
+            $response['image_filename'] = null;
         }
 
 
         return $response;
     }
-
 }

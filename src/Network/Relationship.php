@@ -2,47 +2,39 @@
 
 namespace Karolina\Network;
 
+class Relationship
+{
+    public $follower;
+    public $followed;
+    private $type;
 
-Class Relationship {
+    public function getFollower()
+    {
+        return $this->follower;
+    }
 
-	public $follower;
-	public $followed;
-	private $type;
+    public function setFollower($follower)
+    {
+        $this->follower = $follower;
+    }
 
-	public function getFollower () {
+    public function getFollowed()
+    {
+        return $this->followed;
+    }
 
-		return $this->follower;
+    public function setFollowed($followed)
+    {
+        $this->followed = $followed;
+    }
 
-	}
+    public function setRelationshipType($type)
+    {
+        $this->type = $type;
+    }
 
-	public function setFollower ($follower) {
-
-		$this->follower = $follower;
-
-	}
-
-	public function getFollowed () {
-
-		return $this->followed;
-
-	}
-
-	public function setFollowed ($followed) {
-
-		$this->followed = $followed;
-
-	}
-
-	public function setRelationshipType ($type) {
-
-		$this->type = $type;
-
-	}
-
-	public function getRelationshipType () {
-
-		return $this->type;
-
-	}
-
+    public function getRelationshipType()
+    {
+        return $this->type;
+    }
 }

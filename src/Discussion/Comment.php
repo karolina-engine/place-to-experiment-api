@@ -2,8 +2,6 @@
 
 namespace Karolina\Discussion;
 
-Class Comment {
-	
-	
-
+class Comment
+{
 }

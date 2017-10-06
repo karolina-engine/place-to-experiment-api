@@ -2,10 +2,7 @@
 
 namespace Karolina\Discussion;
 
-Class Topic {
-	
-	private $comments = array();
-
-	
-
+class Topic
+{
+    private $comments = array();
 }

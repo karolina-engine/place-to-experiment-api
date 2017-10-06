@@ -1,44 +1,37 @@
 <?php
 namespace Karolina\API\v1;
 
-Class TeamResponse extends Response {
+class TeamResponse extends Response
+{
+    private $document;
+    private $imagePath;
+        
+    public function __construct($document, $imagePath)
+    {
+        $this->document = $document;
+        $this->imagePath = $imagePath;
+    }
 
-	private $document;
-	private $imagePath;
-		
-	public function __construct ($document, $imagePath) {
+    public function get()
+    {
+        $doc = $this->document;
+        $imgStorageUrl = $this->imagePath;
 
-		$this->document = $document;
-		$this->imagePath = $imagePath;
-	}
+        $response = array();
 
-	public function get () {
+        // Put absolute urls for teams
+        foreach ($doc as $memberId => $memberData) {
+            if ($doc[$memberId]['image'] != null) {
+                $response[$memberId]['image'] = $imgStorageUrl."/".$memberData['image'];
+            } else {
+                $response[$memberId]['image'] = null;
+            }
 
-		$doc = $this->document;
-		$imgStorageUrl = $this->imagePath;
+            $response[$memberId]['profile_id'] = (string) $memberId;
+            $response[$memberId]['first_name'] = $memberData['first_name'];
+            $response[$memberId]['last_name'] = $memberData['last_name'];
+        }
 
-		$response = array();
-
-		// Put absolute urls for teams
-		foreach ($doc as $memberId => $memberData) {
-
-			if ($doc[$memberId]['image'] != NULL) {
-
-				$response[$memberId]['image'] = $imgStorageUrl."/".$memberData['image'];
-
-			} else {
-
-				$response[$memberId]['image'] = NULL;
-
-			}
-
-			$response[$memberId]['profile_id'] = (string) $memberId;
-			$response[$memberId]['first_name'] = $memberData['first_name'];
-			$response[$memberId]['last_name'] = $memberData['last_name'];
-		}
-
-		return $response;
-
-	}
-
+        return $response;
+    }
 }

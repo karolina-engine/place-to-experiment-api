@@ -2,62 +2,55 @@
 
 namespace Karolina\Experiment;
 
-Class ExperimentRepositoryFilter {
+class ExperimentRepositoryFilter
+{
+    private $models;
 
-	private $models;
+    public function __construct($models)
+    {
+        $this->models = $models;
+    }
 
-	public function __construct ($models) {
+    public function fromArguments($args)
+    {
+        if (isset($args['team_member_id'])) {
+            $this->byTeamMember($args['team_member_id']);
+        }
 
-		$this->models = $models; 
+        if (isset($args['place'])) {
+            $this->byPlaceToShowIn($args['place']);
+        }
 
-	}
+        if (isset($args['stage'])) {
+            $this->byStage($args['stage']);
+        }
 
-	public function fromArguments ($args) {
+        if (isset($args['limit'])) {
+            $this->models = $this->models->limit($args['limit']);
+        }
 
-		if (isset($args['team_member_id'])) {
+        if (isset($args['offset'])) {
+            $this->models = $this->models->offset((int)$args['offset']);
+        }
+    }
 
-			$this->byTeamMember($args['team_member_id']);
-		}
+    public function byTeamMember($userId)
+    {
+        $this->models = $this->models->where('document->team->'.$userId.'->in_team', true);
+    }
 
-		if (isset($args['place'])) {
-			$this->byPlaceToShowIn($args['place']);
-		}
+    public function byPlaceToShowIn($place)
+    {
+        $this->models = $this->models->where('show_in->'.$place, true);
+    }
 
-		if (isset($args['stage'])) {
-			$this->byStage($args['stage']);
-		}
+    public function byStage($stage)
+    {
+        $this->models = $this->models->where('stage', "=", (int) $stage);
+    }
 
-		if (isset($args['limit'])) {
-			$this->models = $this->models->limit($args['limit']);
-		}
-
-		if (isset($args['offset'])) {
-			$this->models = $this->models->offset((int)$args['offset']);
-		}
-
-	}
-
-	public function byTeamMember($userId) {
-
-		$this->models = $this->models->where('document->team->'.$userId.'->in_team', true);
-
-	}
-
-	public function byPlaceToShowIn($place) {
-
-		$this->models = $this->models->where('show_in->'.$place	, true);
-		
-	}
-
-	public function byStage ($stage) {
-
-		$this->models = $this->models->where('stage', "=", (int) $stage);
-		
-	}
-
-	public function getModels () {
-
-		return $this->models;
-	}
-
+    public function getModels()
+    {
+        return $this->models;
+    }
 }

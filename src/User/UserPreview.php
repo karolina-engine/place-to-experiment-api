@@ -7,8 +7,8 @@
  */
 
 namespace Karolina\User;
-use Karolina\User\User as User;
 
+use Karolina\User\User as User;
 
 class UserPreview
 {
@@ -19,15 +19,13 @@ class UserPreview
     private $userId;
 
 
-    public function setFromUser (User $user) {
-
-
+    public function setFromUser(User $user)
+    {
         $this->setFirstName($user->getFirstName());
         $this->setLastName($user->getLastName());
         $this->setDescription($user->getProfileDescription());
         $this->setProfileImage($user->getProfileImage());
         $this->setUserId($user->getId());
-
     }
 
 
@@ -119,7 +117,4 @@ class UserPreview
         $this->description = $description;
         return $this;
     }
-
-
-
 }

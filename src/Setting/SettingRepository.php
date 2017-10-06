@@ -2,22 +2,18 @@
 
 namespace Karolina\Setting;
 
-Class SettingRepository {
+class SettingRepository
+{
+    public function getAll()
+    {
+        $settingsGroup = new \Karolina\Setting\SettingsGroup();
 
-	public function getAll () {
+        $models = \Karolina\Database\Table\Setting::all();
 
-		$settingsGroup = new \Karolina\Setting\SettingsGroup();
+        foreach ($models as $model) {
+            $settingsGroup->set($model->variable, $model->value);
+        }
 
-    	$models = \Karolina\Database\Table\Setting::all();
-
-    	foreach ($models as $model) {
-
-    		$settingsGroup->set($model->variable, $model->value);
-
-    	}
-
-    	return $settingsGroup;
-
-	}
-
+        return $settingsGroup;
+    }
 }

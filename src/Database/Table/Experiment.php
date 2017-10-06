@@ -5,9 +5,8 @@ namespace Karolina\Database\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-
-Class Experiment extends Model {
-
+class Experiment extends Model
+{
     protected $table = 'kf_experiments';
     protected $primaryKey = 'experiment_id';
     protected $guarded = [];
@@ -19,6 +18,5 @@ Class Experiment extends Model {
         static::addGlobalScope('disabled', function (Builder $builder) {
             $builder->where('disabled', '=', 0);
         });
-    }    
-
+    }
 }

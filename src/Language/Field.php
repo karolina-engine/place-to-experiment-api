@@ -2,31 +2,29 @@
 
 namespace Karolina\Language;
 
-Class Field {
-
+class Field
+{
     private $value;
     private $format;
 
-    public function __construct($value, $format = "plaintext") {
-
+    public function __construct($value, $format = "plaintext")
+    {
         $this->value = $value;
         $this->format = $format;
-
     }
 
-    public function getValue () {
-
+    public function getValue()
+    {
         return $this->value;
     }
 
-    public function getFormat () {
-
+    public function getFormat()
+    {
         return $this->format;
-
     }
 
-    public function getAsHTML () {
-
+    public function getAsHTML()
+    {
         switch ($this->format) {
             case 'plaintext':
                     $entities = $this->htmlsafe($this->value);
@@ -53,7 +51,6 @@ Class Field {
                 return $html;
                 break;
         }
-
     }
 
     public function __toString()
@@ -61,14 +58,13 @@ Class Field {
         return (string) $this->value;
     }
 
-    private function htmlsafe ($content) {
-
+    private function htmlsafe($content)
+    {
         return htmlentities($content, ENT_QUOTES, 'UTF-8');
-
     }
 
-    private function markdown ($content) {
-
+    private function markdown($content)
+    {
         $converter = new \League\CommonMark\CommonMarkConverter([
             'renderer' => [
                 'block_separator' => "\n",
@@ -84,19 +80,15 @@ Class Field {
         ]);
 
         return $converter->convertToHtml($content);
-
     }
 
-    private function jsonToHTML ($json) {
-
+    private function jsonToHTML($json)
+    {
         if ($json and $json != "") {
             $converter = new \Karolina\Language\JsonToHtml($json);
             return $converter->getHTML();
-
         } else {
             return "";
         }
-
     }
-
 }

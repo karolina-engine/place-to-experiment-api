@@ -4,118 +4,96 @@ namespace Karolina\Image;
 
 use Respect\Validation\Validator as v;
 
-Class ImageFileRepository {
+class ImageFileRepository
+{
+    private $s3;
 
-	private $s3;
+    public function __construct($s3)
+    {
+        $this->s3 = $s3;
+    }
 
-	public function __construct ($s3) {
+    private function getUniqueName($extension)
+    {
+        $uuid = new \Karolina\UUID();
 
-		$this->s3 = $s3;
+        $uniqueFilename = $uuid->getString().'.'.$extension;
+        return $uniqueFilename;
+    }
 
-	}
+    private function isExtensionAllowed($extension)
+    {
+        $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
 
-	private function getUniqueName ($extension) {
+        if (in_array($extension, $allowedExtensions)) {
+            return true;
+        } else {
+            $extension = preg_replace("/[^a-z0-9.]+/i", "", $extension);
+            throw new \Karolina\KarolinaException('File extension: '.$extension.' not allowed. Try jpg, png or gif.', 400, null, 'invalid_file');
+        }
+    }
 
-		$uuid = new \Karolina\UUID();
+    private function isImage($file)
+    {
+        if (v::image()->validate($file)) {
+            return true;
+        } else {
+            throw new \Karolina\KarolinaException('File does not appear to be an image', 400, null, 'invalid_file');
+        }
+    }
 
-		$uniqueFilename = $uuid->getString().'.'.$extension;
-		return $uniqueFilename;
+    private function isDestionationFolderAllowed($destionationFolder)
+    {
+        if (v::alnum('-_')->noWhitespace()->validate($destionationFolder)) {
+            return true;
+        } else {
+            throw new \Karolina\KarolinaException('Destination folder incorrect', 500, null, 'error');
+        }
+    }
 
-	}
-
-	private function isExtensionAllowed ($extension) {
-
-		$allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
-
-		if (in_array($extension, $allowedExtensions)) {
-
-			return true;
-
-		} else {
-		
-			$extension = preg_replace("/[^a-z0-9.]+/i", "", $extension);
-			throw new \Karolina\KarolinaException('File extension: '.$extension.' not allowed. Try jpg, png or gif.', 400, null, 'invalid_file');
-		}
-
-	}
-
-	private function isImage ($file) {
-
-		if (v::image()->validate($file)) {
-
-			return true;
-
-		} else {
-
-			throw new \Karolina\KarolinaException('File does not appear to be an image', 400, null, 'invalid_file');
-		}
-
-	}
-
-	private function isDestionationFolderAllowed ($destionationFolder) {
-
-		if (v::alnum('-_')->noWhitespace()->validate($destionationFolder)) {
-
-			return true;
-
-		} else {
-
-			throw new \Karolina\KarolinaException('Destination folder incorrect', 500, null, 'error');
-
-		}
+    public function storeBinaryImage($image, $destinationFolder, $extension)
+    {
+        $newFilename = $this->getUniqueName($extension);
+        if ($this->isDestionationFolderAllowed($destinationFolder)
+            and $this->isExtensionAllowed($extension)
+            ) {
 
 
-	}
+            // Upload an object to Amazon S3
+            $result = $this->s3->putObject(array(
+                'Bucket' => 'agitator-image-host',
+                'Key'    => $destinationFolder.'/'.$newFilename,
+                'Body' => $image
 
-	public function storeBinaryImage ($image, $destinationFolder, $extension) {
+            ));
+            return $newFilename;
+        }
+    }
 
-		$newFilename = $this->getUniqueName($extension);
-		if ($this->isDestionationFolderAllowed($destinationFolder)
-			and $this->isExtensionAllowed($extension)
-			) {
+    public function storeImageFile($file, $destinationFolder)
+    {
 
+        // Is it a valid image?
 
-			// Upload an object to Amazon S3
-			$result = $this->s3->putObject(array(
-			    'Bucket' => 'agitator-image-host',
-			    'Key'    => $destinationFolder.'/'.$newFilename,
-			    'Body' => $image
+        $clientProvidedExtension = strtolower($file->getClientOriginalExtension());
+        $uploadedFilePath = $file->getRealPath();
+        $newFilename = $this->getUniqueName($clientProvidedExtension);
 
-			));			
-			return $newFilename;
+        if (
+            $this->isExtensionAllowed($clientProvidedExtension)
+            and $this->isImage($file)
+            and $this->isDestionationFolderAllowed($destinationFolder)
+            ) {
+    
+            // Upload an object to Amazon S3
+            $result = $this->s3->putObject(array(
+                'Bucket' => 'agitator-image-host',
+                'Key'    => $destinationFolder.'/'.$newFilename,
+                'SourceFile' => $uploadedFilePath
 
-		}
+            ));
 
-
-	}
-
-	public function storeImageFile ($file, $destinationFolder) {
-
-		// Is it a valid image?
-
-		$clientProvidedExtension = strtolower($file->getClientOriginalExtension());
-		$uploadedFilePath = $file->getRealPath();
-		$newFilename = $this->getUniqueName($clientProvidedExtension);
-
-		if (
-			$this->isExtensionAllowed($clientProvidedExtension) 
-			and $this->isImage($file)
-			and $this->isDestionationFolderAllowed($destinationFolder)
-			) {
-	
-			// Upload an object to Amazon S3
-			$result = $this->s3->putObject(array(
-			    'Bucket' => 'agitator-image-host',
-			    'Key'    => $destinationFolder.'/'.$newFilename,
-			    'SourceFile' => $uploadedFilePath
-
-			));
-
-			return $newFilename;
-
-		}
-
-
-	}
-
+            return $newFilename;
+        }
+    }
 }
