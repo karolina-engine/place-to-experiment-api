@@ -23,6 +23,10 @@ Vue.component(
     require('./components/experiment-index')
 )
 Vue.component(
+    'experiment-map',
+    require('./components/experiment-map')
+)
+Vue.component(
     'profile-index',
     require('./components/profile-index')
 )
@@ -51,12 +55,6 @@ Vue.component(
     () =>
     /* eslint-disable func-call-spacing */
     import ('./components/experiment-language')
-)
-Vue.component(
-    'profile-language',
-    () =>
-    /* eslint-disable func-call-spacing */
-    import ('./components/profile-language')
 )
 Vue.component(
     'discourse-sso',
@@ -103,10 +101,9 @@ Vue.component(
 import VeeValidate from 'vee-validate'
 import axios from 'axios'
 import VueNotifications from 'vue-notifications'
-require('es6-object-assign')
-    .polyfill()
 import miniToastr from 'mini-toastr'
 import SocialSharing from 'vue-social-sharing'
+import * as VueGoogleMaps from 'vue2-google-maps'
 /* eslint-enable */
 // prepare plugins
 miniToastr.init({
@@ -140,6 +137,7 @@ Vue.use(VeeValidate, {
     fieldsBagName: 'formFields'
 })
 Vue.use(SocialSharing)
+Vue.use(VueGoogleMaps)
 
 // set alias to facilitate migration from vue-resource to axios
 Vue.prototype.$http = axios

@@ -2,7 +2,7 @@ class_name: ApiTester
 modules:
     enabled:
         - REST:
-            url:
+            url: https://sandbox.karolina.io/agitator
             depends: PhpBrowser
         - \Helper\Api
         - Asserts

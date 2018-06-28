@@ -218,6 +218,9 @@ class Api extends \Codeception\Module
                 case 'preview_experiment_id':
                     $decodedResponse = $responseArray['previews'][0]['experiment_id'];
                     break;
+				case 'experiment_previews':
+                    $decodedResponse = $responseArray['previews'];
+                    break;
                 case 'tag_id':
                     $decodedResponse = $responseArray['tags'][0]['id'];
                     break;
@@ -266,6 +269,9 @@ class Api extends \Codeception\Module
                 case 'experiment_image_collection':
                     $decodedResponse = $responseArray['experiment']['image_collection'];
                     break;
+				case 'team_emails':
+					$decodedResponse = $responseArray['previews'][0]['team_emails'];
+					break;
                 case 'status':
                     $decodedResponse = $responseArray['status'];
                     break;

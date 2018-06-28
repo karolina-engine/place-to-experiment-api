@@ -83,7 +83,7 @@ export default {
         updatePasswordNotification: {},
         setUserLinksNotification: {},
         setTagsForUserNotification: {},
-        sesetSkillsForUserNotification: {}
+        setSkillsForUserNotification: {}
     },
     methods: {
         setup: function() {
@@ -547,7 +547,7 @@ export default {
                 this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'setSkillsForUser')
                 // show error message
                 var message = this.getErrorMessage(this, error.response)
-                this.sesetSkillsForUserNotification({
+                this.setSkillsForUserNotification({
                     message: message,
                     timeout: 5000,
                     type: 'error'

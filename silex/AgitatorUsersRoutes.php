@@ -141,24 +141,27 @@ $agitator->post('/users/me/links/', function (Request $request) use ($app) {
 $agitator->get('/users/preview/', function (Request $request) use ($app) {
 
 	$usersRepo = new \Karolina\User\UserRepository($app['ci']);
-	$users = $usersRepo->getAll();
+
+	$filterArguments = $request->query->all();
+	$usersDocuments = $usersRepo->getAllDocuments($filterArguments);
 
 	$responseArray = array();
 
 	$imgStorageUrl = $app['platform']->getImgStorageUrl();
-	foreach ($users as $user) {
 
-		$userField['image'] = NULL;
-		foreach ($user->getImageCollectionDocument() as $contentKey => $imageData) {
+	foreach ($usersDocuments as $usersDocument) {
+
+        $userField['image'] = NULL;
+		foreach ($usersDocument['image'] as $contentKey => $imageData) {
 			$userField['image'] = $imgStorageUrl."/".$imageData['filename'];
 		}
 
-		$userField['user_id'] = $user->getId();
-		$userField['first_name'] = $user->getFirstName();
-		$userField['last_name'] = $user->getLastName();
-		$userField['short_description'] = $user->getProfileShortDescription()->getValue();
-		$userField['links'] = $user->getLinks();
-		$tagResponse = new Karolina\API\v1\TagsResponse($user->getTagsDocument(), 'EN');
+		$userField['user_id'] = $usersDocument['user_id'];
+		$userField['first_name'] = $usersDocument['first_name'];
+		$userField['last_name'] = $usersDocument['last_name'];
+		$userField['short_description'] = $usersDocument['short_description'];
+		$userField['links'] = $usersDocument['links'];
+		$tagResponse = new Karolina\API\v1\TagsResponse($usersDocument['tags'], 'EN');
 		$userField['tags'] = $tagResponse->get();
 
 		$responseArray[] = $userField;
@@ -169,7 +172,19 @@ $agitator->get('/users/preview/', function (Request $request) use ($app) {
 
 	$response['status'] = "success";
 	return $app->json($response);
-	
+
+});
+
+$agitator->get('/users/rewritedocuments/', function(Request $request) use ($app) {
+
+	$usersRepo = new \Karolina\User\UserRepository($app['ci']);
+	$documentsCount = $usersRepo->reWriteAllDocuments();
+
+	$response['count'] = $documentsCount;
+	$response['status'] = "success";
+
+	return $app->json($response);
+
 });
 
 

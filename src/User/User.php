@@ -57,6 +57,13 @@ Class User {
 
 	}
 
+	public function setAdminOfTags ($tagIds) {
+
+        $this->setSetting('admin_of_tags', $tagIds);
+
+    }
+
+
 	public function setNetwork (Root $network) {
 
 		$this->network = $network;

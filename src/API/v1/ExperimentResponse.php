@@ -2,13 +2,15 @@
 
 namespace Karolina\API\v1;
 
+use Karolina\Platform;
+
 Class ExperimentResponse extends Response {
 
 	private $document;
 	private $platform;
 	private $langCode;
-		
-	public function __construct ($document, $langCode, $platform) {
+
+	public function __construct ($document, $langCode, Platform $platform) {
 
 		$this->document = $document;
 		$this->platform = $platform;
@@ -16,7 +18,7 @@ Class ExperimentResponse extends Response {
 
 	}
 
-	public function getPreview () {
+	public function getPreview ($showTeamEmails = false) {
 
 		$doc = $this->document;
 		$imgStorageUrl = $this->platform->getImgStorageUrl();
@@ -30,19 +32,19 @@ Class ExperimentResponse extends Response {
 		if (isset($language['title']['value'])) {
 			$response['title'] = $language['title']['value'];
 		} else {
-			$response['title'] = "Untitled";	
+			$response['title'] = "Untitled";
 		}
 
 		if (isset($language['short_description']['value'])) {
 			$response['short_description'] = $language['short_description']['value'];
 		} else {
-			$response['short_description'] = "";	
+			$response['short_description'] = "";
 		}
 
 		if (isset($language['owner_name']['value'])) {
 			$response['owner_name'] = $language['owner_name']['value'];
 		} else {
-			$response['owner_name'] = "";	
+			$response['owner_name'] = "";
 		}
 
 
@@ -54,8 +56,21 @@ Class ExperimentResponse extends Response {
 			$response['image'] = NULL;
 		}
 
+		if ((isset($doc['geographic_location']) and $doc['geographic_location'] != NULL)) {
+            $response['geographic_location'] = (string) $doc['geographic_location'];
+        } else {
+            $response['geographic_location'] = NULL;
+        }
 
 		$response['show_in'] = $doc['show_in'];
+
+		if (isset($doc['team_emails']) && $showTeamEmails){
+			$response['team_emails'] = $doc['team_emails'];
+		}else{
+			$response['team_emails'] = NULL;
+		}
+
+		$response['tags'] = (new TagsResponse($doc['tags'], $this->langCode))->get();
 
 		return $response;
 
@@ -82,7 +97,7 @@ Class ExperimentResponse extends Response {
 		$response['disabled'] = (bool) $doc['disabled'];
 
 		if (count($doc['show_in']) == 0) {
-			
+
 			$response['show_in'] = NULL;
 
 		} else {

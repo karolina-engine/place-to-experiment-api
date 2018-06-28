@@ -67,5 +67,15 @@ Class Team {
 
 	}
 
+	public function getMembersEmails () {
+
+		$emailArray = array();
+		foreach ($this->members as $member) {
+			$emailArray[] = $member['user']->getEmail();
+		}
+		return $emailArray;
+
+	}
+
 
 }

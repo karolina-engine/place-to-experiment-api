@@ -146,6 +146,24 @@ class ExperimentCest
         $I->comment('The ID of the first retrieved experiment is: '.$experimentId);
     }
 
+	public function getExperimentsPreviewWithQuery(ApiTester $I)
+	{
+		$query = '?place=index&tag=1';
+
+		$I->wantTo('succeed at experiments preview with a query parameter');
+		$experimentId = $this->getExperimentId($I);
+
+		$I->setRole('visitor');
+		$I->setStatus('success');
+		$I->setAuthorization(false);
+
+		$I->getExperimentsPreviewResponse(false, $query);
+
+		$I->checkResponse($I, 'get_experiments_preview');
+		$experimentPreviews = $I->decodeResponse($I, 'experiment_previews');
+		$I->comment('The number of matching experiments is: '.count($experimentPreviews));
+	}
+
     public function getAvailableTagsForExperiments(ApiTester $I)
     {
         $I->wantTo('succeed at getting available tags for experiments');
@@ -306,4 +324,37 @@ class ExperimentCest
         $customLangVal = $response['experiment']['custom_language']['my_custom_field']['value'];
         $I->assertSame('Some value!', $customLangVal);
     }
+
+	public function getTeamEmailsAsAdmin (ApiTester $I)
+	{
+		$I->wantTo('succeed at getting team emails from experiment index as admin');
+
+		$I->setRole('admin');
+		$I->setStatus('success');
+		$I->setAuthorization(true);
+
+		$I->getExperimentsPreviewResponse();
+
+		$I->checkResponse($I, 'get_experiments_preview');
+
+		$experimentEmails = $I->decodeResponse($I, 'team_emails');
+		$I->assertNotSame(NULL, $experimentEmails);
+		$I->comment('The first email in the team is: '.$experimentEmails[0]);
+	}
+
+	public function getTeamEmailsAsVisitor (ApiTester $I)
+	{
+		$I->wantTo('succeed at getting NULL team emails from experiment index as visitor');
+
+		$I->setRole('visitor');
+		$I->setStatus('success');
+		$I->setAuthorization(false);
+
+		$I->getExperimentsPreviewResponse();
+
+		$I->checkResponse($I, 'get_experiments_preview');
+
+		$experimentEmails = $I->decodeResponse($I, 'team_emails');
+		$I->assertSame(NULL, $experimentEmails);
+	}
 }

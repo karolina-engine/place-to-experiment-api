@@ -386,6 +386,7 @@ Class UserRepository {
         }
         $profileModel->tags = json_encode($tagIdArray);
 
+		$profileModel->document = $this->userToJsonDocument($user);
 
         $stuffedProfileModel = $this->userToModel($user, $profileModel);
         $stuffedProfileModel->save();
@@ -395,9 +396,69 @@ Class UserRepository {
         $stuffedUserModel->save();
 
 
+
         return true;
 
     }
+
+	private function userToJsonDocument (User $user) {
+
+		$doc['last_updated'] = time();
+		$doc['user_id'] = (string) $user->getId();
+		$doc['first_name'] = (string) $user->getFirstName();
+		$doc['last_name'] = (string) $user->getLastName();
+		$doc['short_description'] = (string) $user->getProfileShortDescription()->getValue();
+		$doc['links'] = $user->getLinks();
+		$doc['tags'] = $user->getTagsDocument();
+		$doc['image'] = $user->getImageCollectionDocument();
+
+		return json_encode($doc);
+
+
+	}
+
+    public function getAllDocuments ($filterArguments) {
+		$models = $this->getFilteredModels($filterArguments)->get();
+
+		$docs = array();
+		foreach ($models as $model) {
+			if ($model->document) {
+				$docs[] = json_decode($model->document, true);
+			}
+		}
+
+		return $docs;
+
+	}
+
+	public function reWriteAllDocuments () {
+
+		$models = \Karolina\Database\Table\Profile::get();
+
+		foreach ($models as $model) {
+
+			$user = $this->getFromUserModel($model);
+			$document = $this->userToJsonDocument($user);
+			$model->document = $document;
+			$model->save();
+		}
+
+		return count($models);
+
+	}
+
+	private function getFilteredModels ($filterArguments) {
+
+		$filter = new UserRepositoryFilter(
+			new \Karolina\Database\Table\Profile()
+		);
+
+		$filter->fromArguments($filterArguments);
+
+		return $filter->getModels();
+
+	}
+
 
     public function getByIdentifier ($identifier) { // email
 
@@ -466,5 +527,12 @@ Class UserRepository {
 
     }
 
+
+    public function getUserStats () {
+
+        $stats['count'] = \Karolina\Database\Table\User::count();
+        return $stats;
+
+    }
 
 }

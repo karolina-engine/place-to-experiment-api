@@ -11,6 +11,9 @@ module.exports = merge(baseWebpackConfig, {
             sourceMap: config.dev.cssSourceMap
         })
     },
+    entry: {
+        "place-to-experiment": './src/main-dev.js'
+    },
     output: {
         path: config.dev.assetsRoot
     },

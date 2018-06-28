@@ -35,4 +35,36 @@ class TeamTest extends TestCase
 
     }
 
+    public function testGetMembers ()
+	{
+		$team = new Karolina\Team\Team();
+		$userA = new \Karolina\User\User(123, 'example@example.com', 'Arnar', 'Sigurdsson');
+		$userB = new \Karolina\User\User(321, 'example2@example.com', 'John', 'Smith');
+
+		$team->addMember($userA);
+		$team->addMember($userB);
+
+		$myTeam = $team->getMembers();
+
+		$this->assertEquals(2, count($myTeam));
+
+		$this->assertEquals($userA->getEmail(), $myTeam['123']['user']->getEmail());
+
+	}
+
+	public function testGetMembersEmails ()
+	{
+		$team = new Karolina\Team\Team();
+		$userA = new \Karolina\User\User(123, 'example@example.com', 'Arnar', 'Sigurdsson');
+		$userB = new \Karolina\User\User(321, 'example2@example.com', 'John', 'Smith');
+
+		$team->addMember($userA);
+		$team->addMember($userB);
+
+		$membersEmails = $team->getMembersEmails();
+
+		$this->assertEquals($userA->getEmail(), $membersEmails[0]);
+		$this->assertEquals($userB->getEmail(), $membersEmails[1]);
+	}
+
 }

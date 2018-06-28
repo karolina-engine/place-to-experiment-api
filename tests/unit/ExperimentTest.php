@@ -179,4 +179,19 @@ class ExperimentTest extends TestCase
 
     }
 
+	public function testGetExperimentTeamEmails () {
+
+		$userA = new \Karolina\User\User(123, 'example@example.com', 'Arnar', 'Sigurdsson');
+		$userB = new \Karolina\User\User(321, 'example2@example.com', 'John', 'Smith');
+
+		$experiment = new Experiment();
+
+		$experiment->addToTeam($userA);
+		$experiment->addToTeam($userB);
+
+		$teamEmails = $experiment->getTeamEmails();
+
+		$this->assertEquals($userA->getEmail(), $teamEmails[0]);
+		$this->assertEquals($userB->getEmail(), $teamEmails[1]);
+	}
 }

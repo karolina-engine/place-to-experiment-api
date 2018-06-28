@@ -108,6 +108,10 @@ export default {
             // this.debug(first)
             // this.debug(second)
             return first === second
+        },
+        getEmbedCode: function (url, width, height) {
+            var embedCode = '<iframe width="' + width + '" height="' + height + '" src="' + url + '" frameborder="0" allowfullscreen></iframe>'
+            return embedCode
         }
     },
     computed: {

@@ -40,6 +40,11 @@ trait TeamTrait {
         return $this->team;
     }
 
+    public function getTeamEmails () {
+
+        return $this->team->getMembersEmails();
+    }
+
     public function getTeamDocument () {
 
         $doc = array();

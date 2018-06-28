@@ -12,7 +12,7 @@ $agitator = $app['controllers_factory'];
 
 $agitator->get('/experiments/preview/{langCode}', function ($langCode, Request $request) use ($app) {
 
-
+	/** @var \Karolina\Experiment\ExperimentInteractor $interactor */
 	$interactor = $app['experimentInteractor'];
 
 	$filterArguments = $request->query->all();
@@ -23,11 +23,16 @@ $agitator->get('/experiments/preview/{langCode}', function ($langCode, Request $
 	);
 
 
+	if ($app['currentUser'] and $app['currentUser']->isAdmin()) {
+		$showTeamEmails = true;
+	}else{
+		$showTeamEmails = false;
+	}
 	$response['previews'] = array();
 	foreach ($experimentsPreviews as $preview) {
 
 		$response['previews'][]
-			= (new Karolina\API\v1\ExperimentResponse($preview, 'EN', $app['platform']))->getPreview();
+			= (new Karolina\API\v1\ExperimentResponse($preview, 'EN', $app['platform']))->getPreview($showTeamEmails);
 
 	}
 

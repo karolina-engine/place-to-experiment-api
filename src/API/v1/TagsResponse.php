@@ -23,7 +23,7 @@ Class TagsResponse extends Response {
 
  		foreach ($doc as $tagId => $tag) {
 
-	 		// Return the language for that languge code
+	 		// Return the language for that language code
 			if (isset($tag[$langCode])) {
 
 				$bit = $tag[$langCode];

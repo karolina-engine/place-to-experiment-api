@@ -6,8 +6,22 @@ export default {
         registerUserMixin: function (apiUrl, credentials) {
             return this.$http.post(apiUrl + '/users/', credentials)
         },
-        getUsersPreviewMixin: function (apiUrl) {
-            return this.$http.get(apiUrl + '/users/preview/')
+        getUsersPreviewMixin: function (apiUrl, query = false) {
+            var queryString = ''
+            if (query.length > 0) {
+                queryString = '?'
+                for (var i = 0; i < query.length; i++) {
+                    for (var key in query[i]) {
+                        queryString += key
+                        queryString += '='
+                        queryString += query[i][key]
+                    }
+                    if (i + 1 !== query.length) {
+                        queryString += '&'
+                    }
+                }
+            }
+            return this.$http.get(apiUrl + '/users/preview/' + queryString)
         },
         getProfileMixin: function (apiUrl, userId, authHeader) {
             return this.$http.get(apiUrl + '/users/' + userId + '/profile', {

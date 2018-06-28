@@ -182,6 +182,13 @@ $app['experimentEditor'] = function ($app) {
 // User
 $app['userRepository'] = new \Karolina\User\UserRepository($app['ci']);
 
+$app['userInteractor'] = function ($app) {
+
+    $interactor = new \Karolina\User\UserInteractor($app['userRepository']);
+    return $interactor;
+
+};
+
 $app['userEditor'] = function ($app) {
 
 	$editor = new \Karolina\User\UserEditor($app['userRepository']);

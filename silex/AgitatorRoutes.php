@@ -16,6 +16,13 @@ $agitator->get('/nothing/', function (Request $request) use ($app) {
 });
 
 
+$agitator->get('/dashboard/', function (Request $request) use ($app) {
+
+    $dashboard = new \Karolina\Stats\Dashboard($app['experimentInteractor'], $app['userInteractor']);
+
+    return $app->json($dashboard->getStats('index'));
+
+});
 
 $agitator->post('/files/images/', function (Request $request) use ($app) {
 

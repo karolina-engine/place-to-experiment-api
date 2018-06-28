@@ -27,6 +27,10 @@ Class ExperimentRepositoryFilter {
 			$this->byStage($args['stage']);
 		}
 
+		if (isset($args['tag'])) {
+			$this->byTag($args['tag']);
+		}
+
 		if (isset($args['limit'])) {
 			$this->models = $this->models->limit($args['limit']);
 		}
@@ -53,6 +57,12 @@ Class ExperimentRepositoryFilter {
 
 		$this->models = $this->models->where('stage', "=", (int) $stage);
 		
+	}
+
+	public function byTag ($tag) {
+
+		$this->models = $this->models->whereRaw('json_contains(tags, "['.$tag.']")');
+
 	}
 
 	public function getModels () {

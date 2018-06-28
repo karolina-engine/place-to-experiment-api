@@ -21,6 +21,8 @@ Class ExperimentEditor {
 		$newExperiment = new Experiment();
 		$newExperiment->addCreator($this->currentUser);
 
+        $newExperiment->setPlaceToShow('index', TRUE);
+
 		if ($stage) {
 			$newExperiment->setStage($stage);
 

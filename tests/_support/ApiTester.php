@@ -129,14 +129,14 @@ class ApiTester extends \Codeception\Actor
         }
     }
 
-    public function getExperimentsPreviewResponse($overrideRoleAndAuthorization = false)
+    public function getExperimentsPreviewResponse($overrideRoleAndAuthorization = false, $query = '')
     {
         if ($overrideRoleAndAuthorization) {
             $currentAuthorization = $this->getAuthorization();
             $this->setAuthorization(false);
         }
 
-        $endpoint = '/experiments/preview/'.lang;
+        $endpoint = '/experiments/preview/'.lang.$query;
 
         $this->setHeaders($this);
         $this->sendGET($endpoint);

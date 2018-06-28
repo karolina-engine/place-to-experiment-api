@@ -464,7 +464,7 @@ Class Experiment {
 
     /*
         ENABLED / DISABLED:
-        Disable is like soft delete. Hidden but stil exisgts in DB.
+        Disable is like soft delete. Hidden but still exists in DB.
 
     */
 

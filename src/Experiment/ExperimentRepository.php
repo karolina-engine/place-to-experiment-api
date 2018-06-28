@@ -46,12 +46,12 @@ Class ExperimentRepository {
 		$experiment->setTeam($team);
 
 		// Retrieve and set custom language fields
-		$customLanguageFields = 
+		$customLanguageFields =
 		$this->languageFieldsRepository->getLanguageFields ('experiment', $model->experiment_id, 'custom');
 		$experiment->setCustomLanguageFields($customLanguageFields);
 
 		// Retrieve and set default language fields
-		$defaultLanguageFields = 
+		$defaultLanguageFields =
 		$this->languageFieldsRepository->getLanguageFields ('experiment', $model->experiment_id, 'default');
 		$experiment->setLanguageFields($defaultLanguageFields);
 
@@ -68,7 +68,7 @@ Class ExperimentRepository {
 			$experiment->setImageCollectionFromDocument($imagesData);
 		}
 
-		// Retreave and set funding 
+		// Retreave and set funding
 		if ($model->funding) {
 			$fundingSources = json_decode($model->funding, true);
 			$experiment->setFundingFromDocument($fundingSources);
@@ -180,6 +180,7 @@ Class ExperimentRepository {
 		$doc['relationships']['like'] = $experiment->getLikers();
 		$doc['links'] = $experiment->getLinks();
 		$doc['geographic_location'] = $experiment->getGeographicLocation();
+		$doc['team_emails'] = $experiment->getTeamEmails();
 
 		return json_encode($doc);
 
@@ -198,7 +199,7 @@ Class ExperimentRepository {
 
 		}
 
-		catch (\Excpetion $e) {
+		catch (\Exception $e) {
 
     		throw new \Karolina\Exception("There was a problem getting the experiment from the database.", 'error', 500);
 
@@ -227,7 +228,7 @@ Class ExperimentRepository {
 			} else {
 
 				$document['question_stages'] = array ();
-				
+
 			}
 
 
@@ -288,7 +289,7 @@ Class ExperimentRepository {
 		$models = \Karolina\Database\Table\Experiment::get();
 
 		foreach ($models as $model) {
-			
+
 			$experiment = $this->modelToExperiment($model);
 			$document = $this->experimentToJsonDocument($experiment);
 			$model->document = $document;
@@ -299,6 +300,21 @@ Class ExperimentRepository {
 
 	}
 
+	public function getExperimentStats ($showIn = false) {
+
+			if ($showIn) {
+
+					$stats['count'] = \Karolina\Database\Table\Experiment::whereRaw('json_contains(show_in, "true", "$.'.$showIn.'")')->count();
+
+			} else {
+
+					$stats['count'] = \Karolina\Database\Table\Experiment::count();
+					
+			}
+
+	    return $stats;
+
+    }
 
 
 	public function create (Experiment $experiment) {
@@ -311,7 +327,7 @@ Class ExperimentRepository {
 		$model = $this->experimentToModel($experiment, $model);
 		$model->document = $this->experimentToJsonDocument($experiment);
 		$model->save();
-		
+
 		return (string) $model->experiment_id;
 
 	}

@@ -4,6 +4,7 @@
 
 <script>
 import experiments from '../mixins/experiments.js'
+import other from '../mixins/other.js'
 import auth from '../mixins/auth.js'
 import helpers from '../mixins/helpers.js'
 export default {
@@ -13,6 +14,7 @@ export default {
             responseStatus: {},
             experiment: this.common.placeholders.experiment_preview,
             experiments: [],
+            dashboardData: {},
             currentData: [],
             currentPage: [],
             itemsPerPageDefault: 10,
@@ -48,6 +50,10 @@ export default {
                 name: 'owner_name',
                 sortable: true
             }, {
+                text: 'Team emails',
+                name: 'team_emails',
+                sortable: false
+            }, {
                 text: 'Show in',
                 name: 'show_in',
                 sortable: true
@@ -79,11 +85,13 @@ export default {
     },
     mixins: [
         experiments,
+        other,
         auth,
         helpers
     ],
     notifications: {
-        getExperimentsPreviewNotification: {}
+        getExperimentsPreviewNotification: {},
+        getDashboardMixin: {}
     },
     methods: {
         setup: function() {
@@ -95,10 +103,15 @@ export default {
                 this.selectedItemsPerPage = this.itemsPerPageDefault
                 // make API call
                 this.getExperimentsPreview(this.apiUrl, this.language)
+                this.getDashboard()
             }
         },
         getExperimentsPreview: function(apiUrl, language, query) {
-            this.getExperimentsPreviewMixin(apiUrl, language, query).then((response) => {
+            var authHeader = ''
+            if (this.isUserAuthenticatedMixin()) {
+                authHeader = this.getAuthorizationHeaderMixin()
+            }
+            this.getExperimentsPreviewMixin(apiUrl, language, query, authHeader).then((response) => {
                 // debug info
                 this.debug('getExperimentsPreviewMixin response: ')
                 this.debug(this.getResponseData(response))
@@ -123,6 +136,29 @@ export default {
                 // show error message
                 var message = this.getErrorMessage(this, error.response)
                 this.getExperimentsPreviewNotification({
+                    message: message,
+                    timeout: 5000,
+                    type: 'error'
+                })
+            })
+        },
+        getDashboard: function() {
+            this.getDashboardMixin(this.apiUrl).then((response) => {
+                // debug info
+                this.debug('getDashboardMixin response: ')
+                this.debug(this.getResponseData(response))
+                // success callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'getDashboard')
+                this.dashboardData = this.getResponseData(response)
+            }, (error) => {
+                // debug info
+                this.debug('getDashboardMixin error: ')
+                this.debug(this.getResponseMessage(error.response))
+                // error callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'getDashboard')
+                // show error message
+                var message = this.getErrorMessage(this, error.response)
+                this.getDashboardMixin({
                     message: message,
                     timeout: 5000,
                     type: 'error'

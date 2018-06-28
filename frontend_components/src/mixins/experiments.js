@@ -18,9 +18,10 @@ export default {
                 return this.$http.get(apiUrl + '/experiments/' + experimentId + '/' + language)
             }
         },
-        getExperimentsPreviewMixin: function (apiUrl, language, query = false) {
-            if (query && query !== []) {
-                var queryString = ''
+        getExperimentsPreviewMixin: function (apiUrl, language, query = false, authHeader) {
+            var queryString = ''
+            if (query.length > 0) {
+                queryString = '?'
                 for (var i = 0; i < query.length; i++) {
                     for (var key in query[i]) {
                         queryString += key
@@ -31,9 +32,15 @@ export default {
                         queryString += '&'
                     }
                 }
-                return this.$http.get(apiUrl + '/experiments/preview/' + language + '?' + queryString)
+            }
+            if (authHeader) {
+                return this.$http.get(apiUrl + '/experiments/preview/' + language + queryString, {
+                    headers: {
+                        'Authorization': authHeader
+                    }
+                })
             } else {
-                return this.$http.get(apiUrl + '/experiments/preview/' + language)
+                return this.$http.get(apiUrl + '/experiments/preview/' + language + queryString)
             }
         },
         updateExperimentSettingsMixin: function (apiUrl, experimentId, experimentBody, authHeader) {
