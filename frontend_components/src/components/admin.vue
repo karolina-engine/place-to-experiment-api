@@ -105,6 +105,7 @@ export default {
                 this.getExperimentsPreview(this.apiUrl, this.language)
                 this.getDashboard()
             }
+            this.setUserAcl()
         },
         getExperimentsPreview: function(apiUrl, language, query) {
             var authHeader = ''
@@ -310,6 +311,9 @@ export default {
             this.setup()
         }.bind(this))
         this.$root.eventBus.$on('logout', function() {
+            this.setup()
+        }.bind(this))
+        this.$root.eventBus.$on('profile', function() {
             this.setup()
         }.bind(this))
     },

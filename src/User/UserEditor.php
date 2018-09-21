@@ -79,18 +79,24 @@ Class UserEditor {
 
 	public function updateProfile ($profile) {
 
-		if ($profile['shortDescription']) 
+		if ($profile['shortDescription'])
 		$this->user->setProfileShortDescription($profile['shortDescription']);
 
-		if ($profile['description']) 
+		if ($profile['description'])
 		$this->user->setProfileDescription($profile['description']);
 
-		if ($profile['firstName']) 
+		if ($profile['firstName'])
 		$this->user->setFirstName($profile['firstName']);
 
-		if ($profile['lastName']) 
+		if ($profile['lastName'])
 		$this->user->setLastName($profile['lastName']);
 
+		if ($profile['phone'])
+		$this->user->setPhone($profile['phone']);
+
+		if ($profile['documentNumber'])
+		$this->user->setDocumentNumber($profile['documentNumber']);
+        
 		$this->userRepository->save($this->user);
 
 	}

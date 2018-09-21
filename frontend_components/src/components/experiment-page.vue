@@ -5,6 +5,7 @@
 <script>
 import experiments from '../mixins/experiments.js'
 import files from '../mixins/files.js'
+import date from '../mixins/date.js'
 import auth from '../mixins/auth.js'
 import helpers from '../mixins/helpers.js'
 export default {
@@ -80,6 +81,10 @@ export default {
             required: false,
             type: Array
         },
+        redirectUrlNotFound: {
+            required: false,
+            type: String
+        },
         // inherit global data from parent
         common: {
             required: true,
@@ -89,6 +94,7 @@ export default {
     mixins: [
         experiments,
         files,
+        date,
         auth,
         helpers
     ],
@@ -101,7 +107,9 @@ export default {
         updateExperimentFundingNotification: {},
         goToTheNextStageNotification: {},
         setExperimentLinksNotification: {},
-        setTagsForExperimentNotification: {}
+        setTagsForExperimentNotification: {},
+        publishExperimentNotification: {},
+        unpublishExperimentNotification: {}
     },
     methods: {
         setup: function() {
@@ -181,7 +189,7 @@ export default {
             // send the Auth header if logged in
             if (this.isUserAuthenticatedMixin()) {
                 // debug info
-                this.debug('Authorization header: ' + this.getAuthorizationHeaderMixin())
+                // this.debug('Authorization header: ' + this.getAuthorizationHeaderMixin())
                 var authHeader = this.getAuthorizationHeaderMixin()
             }
             this.getExperimentMixin(apiUrl, experimentId, language, authHeader).then((response) => {
@@ -222,6 +230,15 @@ export default {
                     timeout: 5000,
                     type: 'error'
                 })
+
+                // if not found, redirect
+                if (error.response.data.hasOwnProperty('status')) {
+                    if (error.response.data.status === 'not_found') {
+                        if (this.redirectUrlNotFound) {
+                            this.openUrl(this.redirectUrlNotFound)
+                        }
+                    }
+                }
             })
         },
         getTagsForExperiments: function(apiUrl, language) {
@@ -424,7 +441,7 @@ export default {
                 })
             })
         },
-        updateExperimentFunding: function(apiUrl, experimentId, experimentFundingBody) {
+        updateExperimentFunding: function(apiUrl, experimentId, experimentFundingBody, getExperiment = false) {
             var authHeader = this.getAuthorizationHeaderMixin()
             this.updateExperimentFundingMixin(apiUrl, experimentId, experimentFundingBody, authHeader).then((response) => {
                 // debug info
@@ -432,6 +449,9 @@ export default {
                 this.debug(this.getResponseData(response))
                 // success callback
                 this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'updateExperimentFunding')
+                if (getExperiment) {
+                    this.getExperiment(apiUrl, experimentId, this.language)
+                }
             }, (error) => {
                 // debug info
                 this.debug('updateExperimentFundingMixin error: ')
@@ -512,6 +532,22 @@ export default {
                 })
             })
         },
+        updateExperimentEditable: function(postBody, type) {
+            // debug info
+            // this.debug(postBody)
+            if (type === 'setting') {
+                let settingsBody = {
+                    settings: postBody
+                }
+                this.updateExperimentSettings(this.apiUrl, this.experimentId, settingsBody, true)
+            } else if (type === 'funding') {
+                let fundingBody = postBody['funding']
+                this.updateExperimentFunding(this.apiUrl, this.experimentId, fundingBody, true)
+            } else {
+                // debug info
+                this.debug('experiment editable type "' + type + '" not implemented')
+            }
+        },
         onImageLoad: function() {
             // debug info
             this.debug('image loaded')
@@ -549,51 +585,36 @@ export default {
                 }
             }
         },
-        goToTheNextStage: function(apiUrl, experimentId, confirmText = false, successText = false) {
-            // show alert
-            if (confirmText) {
-                var confirm = window.confirm(confirmText)
-            } else {
-                confirm = window.confirm('You are about to move to the next stage of the experiment, are you sure?')
-            }
-            if (confirm) {
-                var authHeader = this.getAuthorizationHeaderMixin()
-                this.moveExperimentToNextStageMixin(apiUrl, experimentId, authHeader).then((response) => {
-                    // debug info
-                    this.debug('moveExperimentToNextStageMixin response: ')
-                    this.debug(this.getResponseData(response))
-                    // success callback
-                    this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'goToTheNextStage')
-                    // fetch the experiment to get possible other back-end changes
-                    this.getExperiment(apiUrl, experimentId, this.language)
-                    if (successText) {
-                        var successMsg = successText
-                    } else {
-                        successMsg = 'Experiment moved to the next stage.'
-                    }
-                    this.goToTheNextStageNotification({
-                        message: successMsg,
-                        timeout: 5000,
-                        type: 'success'
-                    })
-                }, (error) => {
-                    // debug info
-                    this.debug('moveExperimentToNextStageMixin error: ')
-                    this.debug(this.getResponseMessage(error.response))
-                    // error callback
-                    this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'goToTheNextStage')
-                    // show error message
-                    var message = this.getErrorMessage(this, error.response)
-                    this.goToTheNextStageNotification({
-                        message: message,
-                        timeout: 5000,
-                        type: 'error'
-                    })
-                })
-            } else {
+        goToTheNextStage: function() {
+            var authHeader = this.getAuthorizationHeaderMixin()
+            this.moveExperimentToNextStageMixin(this.apiUrl, this.experimentId, authHeader).then((response) => {
                 // debug info
-                this.debug('must confirm to go to the next stage')
-            }
+                this.debug('moveExperimentToNextStageMixin response: ')
+                this.debug(this.getResponseData(response))
+                // success callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'goToTheNextStage')
+                // fetch the experiment to get possible other back-end changes
+                this.getExperiment(this.apiUrl, this.experimentId, this.language)
+                var message = this.getResponseMessage(response)
+                this.goToTheNextStageNotification({
+                    message: message,
+                    timeout: 5000,
+                    type: 'success'
+                })
+            }, (error) => {
+                // debug info
+                this.debug('moveExperimentToNextStageMixin error: ')
+                this.debug(this.getResponseMessage(error.response))
+                // error callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'goToTheNextStage')
+                // show error message
+                var message = this.getErrorMessage(this, error.response)
+                this.goToTheNextStageNotification({
+                    message: message,
+                    timeout: 5000,
+                    type: 'error'
+                })
+            })
         },
         updateExperimentStage: function(apiUrl, experimentId, newExperimentStage) {
             if (newExperimentStage !== parseInt(this.experiment.stage)) {
@@ -769,6 +790,58 @@ export default {
                     // debug info
                     this.debug('update funding form has errors')
                 }
+            })
+        },
+        publishExperiment: function() {
+            var authHeader = this.getAuthorizationHeaderMixin()
+            this.publishExperimentMixin(this.apiUrl, this.experimentId, authHeader).then((response) => {
+                // debug info
+                this.debug('publishExperimentMixin response: ')
+                this.debug(this.getResponseData(response))
+                // success callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'publishExperiment')
+                this.$set(this.selectedExperimentShowIn, 'index', true)
+                // update client side object
+                this.experiment.show_in = Object.assign({}, this.selectedExperimentShowIn)
+            }, (error) => {
+                // debug info
+                this.debug('publishExperimentMixin error: ')
+                this.debug(this.getResponseMessage(error.response))
+                // error callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'publishExperiment')
+                // show error message
+                var message = this.getErrorMessage(this, error.response)
+                this.publishExperimentNotification({
+                    message: message,
+                    timeout: 5000,
+                    type: 'error'
+                })
+            })
+        },
+        unpublishExperiment: function() {
+            var authHeader = this.getAuthorizationHeaderMixin()
+            this.unpublishExperimentMixin(this.apiUrl, this.experimentId, authHeader).then((response) => {
+                // debug info
+                this.debug('unpublishExperimentMixin response: ')
+                this.debug(this.getResponseData(response))
+                // success callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'unpublishExperiment')
+                this.$set(this.selectedExperimentShowIn, 'index', false)
+                // update client side object
+                this.experiment.show_in = Object.assign({}, this.selectedExperimentShowIn)
+            }, (error) => {
+                // debug info
+                this.debug('unpublishExperimentMixin error: ')
+                this.debug(this.getResponseMessage(error.response))
+                // error callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'unpublishExperiment')
+                // show error message
+                var message = this.getErrorMessage(this, error.response)
+                this.unpublishExperimentNotification({
+                    message: message,
+                    timeout: 5000,
+                    type: 'error'
+                })
             })
         },
         setExperimentLinks: function(apiUrl, experimentId, experimentLinksBody, language) {
@@ -1230,6 +1303,17 @@ export default {
         },
         isExperimentLocationModified: function() {
             return this.experiment.geographic_location !== this.experimentLocation && this.experimentLocation !== undefined
+        },
+        isExperimentPublished: function() {
+            if (this.experiment.show_in !== null) {
+                if (this.experiment.show_in.hasOwnProperty('index')) {
+                    return this.experiment.show_in.index
+                } else {
+                    return false
+                }
+            } else {
+                return false
+            }
         }
     },
     created: function() {
@@ -1237,6 +1321,9 @@ export default {
             this.setup()
         }.bind(this))
         this.$root.eventBus.$on('logout', function() {
+            this.setup()
+        }.bind(this))
+        this.$root.eventBus.$on('profile', function() {
             this.setup()
         }.bind(this))
         this.$root.eventBus.$on('crowdfunding:connected', function(stage, raised) {

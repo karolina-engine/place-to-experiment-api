@@ -28,6 +28,8 @@ export default {
                 if (success) {
                     // debug info
                     this.debug('sign in form is valid')
+                    // make sign in email not case-sensitive
+                    this.credentials.email = this.credentials.email.toLowerCase()
                     // dispatch event so that authorization can process the login
                     this.$root.eventBus.$emit('doLogin', this.credentials, this.redirectPath)
                     // close the sign in modal

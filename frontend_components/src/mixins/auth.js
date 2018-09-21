@@ -9,6 +9,9 @@ export default {
             userFirstName: '',
             userLastName: '',
             userEmail: '',
+            userIdNumber: '',
+            userPhone: '',
+            userDocumentNumber: '',
             credentials: {
                 email: '',
                 password: '',
@@ -22,6 +25,7 @@ export default {
         logoutMixin: function (redirect = false) {
             window.localStorage.removeItem('token')
             window.localStorage.removeItem('userData')
+            window.localStorage.removeItem('userAcl')
             if (redirect) {
                 window.location.href = redirect
             }
@@ -77,9 +81,12 @@ export default {
         isUserEditorMixin: function () {
             var editor = false
             if (this.isUserAuthenticatedMixin()) {
-                for (var i = 0; i < this.acl.length; i++) {
-                    if (this.acl[i] === 'edit') {
-                        editor = true
+                if (this.getLocalStorageObjectMixin('userAcl')) {
+                    let userAclObject = this.getLocalStorageObjectMixin('userAcl')
+                    for (var i = 0; i < userAclObject.length; i++) {
+                        if (userAclObject[i] === 'edit') {
+                            editor = true
+                        }
                     }
                 }
             }
@@ -89,9 +96,12 @@ export default {
         isUserAdminMixin: function () {
             var admin = false
             if (this.isUserAuthenticatedMixin()) {
-                for (var i = 0; i < this.acl.length; i++) {
-                    if (this.acl[i] === 'admin') {
-                        admin = true
+                if (this.getLocalStorageObjectMixin('userAcl')) {
+                    let userAclObject = this.getLocalStorageObjectMixin('userAcl')
+                    for (var i = 0; i < userAclObject.length; i++) {
+                        if (userAclObject[i] === 'admin') {
+                            admin = true
+                        }
                     }
                 }
             }
@@ -125,12 +135,24 @@ export default {
                     if (userObject.hasOwnProperty('email')) {
                         this.userEmail = userObject.email
                     }
+                    if (userObject.hasOwnProperty('user_id')) {
+                        this.userIdNumber = userObject.user_id
+                    }
+                    if (userObject.hasOwnProperty('phone')) {
+                        this.userPhone = userObject.phone
+                    }
+                    if (userObject.hasOwnProperty('document_number')) {
+                        this.userDocumentNumber = userObject.document_number
+                    }
                 }
             } else {
                 // reset values
                 this.userFirstName = ''
                 this.userLastName = ''
                 this.userEmail = ''
+                this.userIdNumber = ''
+                this.userPhone = ''
+                this.userDocumentNumber = ''
             }
         },
         userName: function () {

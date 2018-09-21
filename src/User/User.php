@@ -10,6 +10,8 @@ use Respect\Validation\Validator as v;
 Class User {
 
     private $email;
+    private $phone;
+    private $documentNumber;
     protected $id;
     private $firstName = "Unknown";
     private $lastName = "Anonymous";
@@ -359,6 +361,18 @@ Class User {
 
 	}
 
+    public function setPhone ($phone) {
+
+		$this->phone = (string) $phone;
+
+	}
+
+    public function setDocumentNumber ($documentNumber) {
+
+		$this->documentNumber = (string) $documentNumber;
+
+	}
+
 	public function getNewPassword () {
 
 		return $this->newPassword;
@@ -381,6 +395,18 @@ Class User {
 	public function getEmail () {
 
 	    return $this->email;
+
+	}
+
+	public function getPhone () {
+
+	    return $this->phone;
+
+	}
+
+	public function getDocumentNumber () {
+
+	    return $this->documentNumber;
 
 	}
 

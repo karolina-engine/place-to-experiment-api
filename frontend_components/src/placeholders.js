@@ -7,7 +7,9 @@ export default {
         language: false,
         tags: [],
         team: null,
-        links: []
+        links: [],
+        show_in: false,
+        funding: null
     },
 
     experiment_preview: {
@@ -27,8 +29,11 @@ export default {
         last_name: '',
         short_description: '',
         long_description: '',
+        phone: '',
+        document_number: '',
         tags: [],
-        links: []
+        links: [],
+        experiments: []
     },
 
     profile_preview: {

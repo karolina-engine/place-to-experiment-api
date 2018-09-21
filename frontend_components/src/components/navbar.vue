@@ -10,6 +10,13 @@ export default {
     data() {
         return {}
     },
+    props: {
+        // inherit global data from parent
+        common: {
+            required: false,
+            type: Object
+        }
+    },
     mixins: [
         auth,
         helpers

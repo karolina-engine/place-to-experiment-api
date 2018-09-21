@@ -17,6 +17,8 @@ export default {
             editorInstance: null,
             showEditor: false,
             showErrors: false,
+            editorReady: false,
+            editorActive: false,
             supportedEditors: this.common.placeholders.supportedEditors,
             quillEditorConfig: {
                 modules: {
@@ -109,6 +111,7 @@ export default {
                             this.quillEditorConfig = Object.assign({}, this.quillEditorConfig, this.editorConfig)
                             // debug info
                             this.debug('quill editor is ready')
+                            this.editorReady = true
                         }
                     }
                 }
@@ -367,19 +370,19 @@ export default {
                     if (this.value) {
                         return this.value !== this.languageText
                     } else {
-                        return this.languageText !== ''
+                        return this.languageText !== '' && this.languageText !== null
                     }
                 }
             } else {
                 if (this.value) {
                     return this.value !== this.languageText
                 } else {
-                    return this.languageText !== ''
+                    return this.languageText !== '' && this.languageText !== null
                 }
             }
         },
         quillEditorInstance: function() {
-            return this.$refs.quillEditorRef.quillEditor
+            return this.$refs.quillEditorRef.quill
         }
     },
     watch: {

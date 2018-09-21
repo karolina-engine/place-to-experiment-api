@@ -39,6 +39,10 @@ Vue.component(
     require('./components/profile-page')
 )
 Vue.component(
+    'profile-editable',
+    require('./components/profile-editable')
+)
+Vue.component(
     'admin',
     require('./components/admin')
 )
@@ -53,6 +57,10 @@ Vue.component(
 Vue.component(
     'experiment-language',
     require('./components/experiment-language')
+)
+Vue.component(
+    'experiment-editable',
+    require('./components/experiment-editable')
 )
 Vue.component(
     'discourse-sso',
@@ -93,6 +101,14 @@ Vue.component(
 Vue.component(
     'sign-up',
     require('./components/sign-up')
+)
+Vue.component(
+    'alert',
+    require('./components/alert')
+)
+Vue.component(
+    'date-picker-component',
+    require('./components/date-picker-component')
 )
 /* eslint-disable */
 // import plugins
@@ -188,6 +204,7 @@ Vue.directive('autosize', {
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
+    name: 'root',
     data: {
         eventBus: eventBus,
         placeholders: placeholders
@@ -195,5 +212,18 @@ new Vue({
     mixins: [
         auth,
         helpers
-    ]
+    ],
+    methods: {
+        setAttributes: function() {
+            // special hack because $attrs are not populated in root instance
+            let tempArray = Array.from(this.$el.attributes)
+            for (let attr in tempArray) {
+                let name = tempArray[attr].name
+                let value = tempArray[attr].value
+                this.attributes = {
+                    [name]: value
+                }
+            }
+        }
+    }
 })

@@ -26,7 +26,7 @@ CREATE TABLE `kf_answers` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`answer_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,7 +60,7 @@ CREATE TABLE `kf_experiments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `settings` json DEFAULT NULL,
   PRIMARY KEY (`experiment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -142,12 +142,14 @@ CREATE TABLE `kf_profiles` (
   `last_name` varchar(50) DEFAULT NULL,
   `company` varchar(100) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
+  `document_number` varchar(20) DEFAULT NULL,
   `profile_pic` varchar(200) NOT NULL,
   `description` varchar(400) DEFAULT NULL,
   `content` mediumtext,
   `images` json DEFAULT NULL,
   `links` json DEFAULT NULL,
   `tags` json DEFAULT NULL,
+  `document` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `user_id` (`user_id`)
@@ -203,7 +205,7 @@ CREATE TABLE `kf_questions` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`question_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,7 +233,7 @@ CREATE TABLE `kf_rate_limited_events` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`rate_limited_event_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -390,7 +392,7 @@ CREATE TABLE `kf_tags` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`tag_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -419,7 +421,7 @@ CREATE TABLE `kf_team_members` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`team_member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

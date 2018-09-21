@@ -357,4 +357,107 @@ class ExperimentCest
 		$experimentEmails = $I->decodeResponse($I, 'team_emails');
 		$I->assertSame(NULL, $experimentEmails);
 	}
+
+    public function publishUnpublishExperimentAsCreator (ApiTester $I)
+	{
+		$I->wantTo('succeed at publishing and unpublishing an experiment as creator');
+
+        $experimentId = $this->getExperimentId($I);
+
+		$I->setRole('creator');
+		$I->setStatus('success');
+		$I->setAuthorization(true);
+
+		$I->publishExperimentResponse($experimentId);
+
+		$I->checkResponse($I, 'message');
+
+		// see if show_in is OK
+        $I->getExperimentResponse($experimentId, true);
+
+        $experimentShowIn = $I->decodeResponse($I, 'experiment_show_in');
+        $experimentShowInIndex = NULL;
+        if(array_key_exists('index', $experimentShowIn)){
+            $experimentShowInIndex = $experimentShowIn['index'];
+        }
+		$I->assertTrue($experimentShowInIndex);
+
+        $I->unpublishExperimentResponse($experimentId);
+
+        $I->checkResponse($I, 'message');
+
+		// see if show_in is OK
+        $I->getExperimentResponse($experimentId, true);
+
+        $experimentShowIn = $I->decodeResponse($I, 'experiment_show_in');
+
+        $experimentShowInIndex = NULL;
+        if(array_key_exists('index', $experimentShowIn)){
+            $experimentShowInIndex = $experimentShowIn['index'];
+        }
+		$I->assertFalse($experimentShowInIndex);
+	}
+
+    public function publishUnpublishExperimentAsAdmin (ApiTester $I)
+	{
+		$I->wantTo('succeed at publishing and unpublishing an experiment as admin');
+
+        $experimentId = $this->getExperimentId($I);
+
+		$I->setRole('admin');
+		$I->setStatus('success');
+		$I->setAuthorization(true);
+
+		$I->publishExperimentResponse($experimentId);
+
+        $I->checkResponse($I, 'message');
+
+		// see if show_in is OK
+        $I->getExperimentResponse($experimentId, true);
+
+        $experimentShowIn = $I->decodeResponse($I, 'experiment_show_in');
+
+        $experimentShowInIndex = NULL;
+        if(array_key_exists('index', $experimentShowIn)){
+            $experimentShowInIndex = $experimentShowIn['index'];
+        }
+		$I->assertTrue($experimentShowInIndex);
+
+        $I->unpublishExperimentResponse($experimentId);
+
+        $I->checkResponse($I, 'message');
+
+		// see if show_in is OK
+        $I->getExperimentResponse($experimentId, true);
+
+        $experimentShowIn = $I->decodeResponse($I, 'experiment_show_in');
+
+        $experimentShowInIndex = NULL;
+        if(array_key_exists('index', $experimentShowIn)){
+            $experimentShowInIndex = $experimentShowIn['index'];
+        }
+		$I->assertFalse($experimentShowInIndex);
+	}
+
+    public function publishUnpublishExperimentAsVisitor (ApiTester $I)
+	{
+		$I->wantTo('fail at publishing and unpublishing an experiment as visitor');
+
+        $experimentId = $this->getExperimentId($I);
+
+		$I->setRole('visitor');
+		$I->setStatus('failure');
+		$I->setAuthorization(true);
+
+		$I->publishExperimentResponse($experimentId);
+
+		$I->checkResponse($I, 'message');
+
+        // set published
+		$I->publishExperimentResponse($experimentId, true);
+
+        $I->unpublishExperimentResponse($experimentId);
+
+	    $I->checkResponse($I, 'message');
+	}
 }

@@ -5,7 +5,7 @@ Class TeamResponse extends Response {
 
 	private $document;
 	private $imagePath;
-		
+
 	public function __construct ($document, $imagePath) {
 
 		$this->document = $document;
@@ -22,19 +22,23 @@ Class TeamResponse extends Response {
 		// Put absolute urls for teams
 		foreach ($doc as $memberId => $memberData) {
 
+            $member = array();
+
 			if ($doc[$memberId]['image'] != NULL) {
 
-				$response[$memberId]['image'] = $imgStorageUrl."/".$memberData['image'];
+				$member['image'] = $imgStorageUrl."/".$memberData['image'];
 
 			} else {
 
-				$response[$memberId]['image'] = NULL;
+				$member['image'] = NULL;
 
 			}
 
-			$response[$memberId]['profile_id'] = (string) $memberId;
-			$response[$memberId]['first_name'] = $memberData['first_name'];
-			$response[$memberId]['last_name'] = $memberData['last_name'];
+			$member['profile_id'] = (string) $memberId;
+			$member['first_name'] = $memberData['first_name'];
+			$member['last_name'] = $memberData['last_name'];
+
+            $response[] = $member;
 		}
 
 		return $response;

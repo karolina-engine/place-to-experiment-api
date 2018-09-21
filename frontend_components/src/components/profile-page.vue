@@ -128,6 +128,9 @@ export default {
                                 this.sortExperiments()
                             }
                         }
+                        if (response.data.hasOwnProperty('acl')) {
+                            this.$set(this, 'acl', response.data.acl)
+                        }
                     }
                     // set values to populate form
                     this.profileFirstName = this.profile.first_name
@@ -138,6 +141,7 @@ export default {
                     if (this.isEditable) {
                         this.getTagsForExperiments(apiUrl, this.language)
                     }
+                    this.setUserAcl()
                 }, (error) => {
                     // debug info
                     this.debug('getProfileMixin error: ')
@@ -170,6 +174,9 @@ export default {
                             this.sortExperiments()
                         }
                     }
+                    if (response.data.hasOwnProperty('acl')) {
+                        this.$set(this, 'acl', response.data.acl)
+                    }
                 }
                 // set values to populate form
                 this.profileFirstName = this.profile.first_name
@@ -180,6 +187,7 @@ export default {
                 if (this.isEditable) {
                     this.getTagsForExperiments(apiUrl, this.language)
                 }
+                this.setUserAcl()
             }, (error) => {
                 // debug info
                 this.debug('getMyProfileMixin error: ')
@@ -245,6 +253,10 @@ export default {
                 this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'updateMyProfile')
                 // dispatch event so that authorization can process the change
                 this.$root.eventBus.$emit('doProfile')
+                // update client-side
+                for (var key in profileBody) {
+                    this.$set(this.profile, key, profileBody[key])
+                }
             }, (error) => {
                 // debug info
                 this.debug('updateMyProfileMixin error: ')
@@ -306,6 +318,8 @@ export default {
                     timeout: 5000,
                     type: 'success'
                 })
+                // dispatch event so that authorization can process the change
+                this.$root.eventBus.$emit('doProfile')
             }, (error) => {
                 // debug info
                 this.debug('uploadImageFileMixin error: ')
@@ -367,39 +381,7 @@ export default {
                             new_password: this.credentials.newPassword,
                             old_password: this.credentials.oldPassword
                         }
-                        var authHeader = this.getAuthorizationHeaderMixin()
-                        this.changeMyPasswordMixin(apiUrl, profileBody, authHeader).then((response) => {
-                            // debug info
-                            this.debug('changeMyPasswordMixin response: ')
-                            this.debug(this.getResponseData(response))
-                            // success callback
-                            this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'changeMyPassword')
-                            // show success message
-                            var message = this.getErrorMessage(this, {
-                                data: {
-                                    status: 'password_updated',
-                                    message: 'Password updated.'
-                                }
-                            })
-                            this.updateProfileImageNotification({
-                                message: message,
-                                timeout: 5000,
-                                type: 'success'
-                            })
-                        }, (error) => {
-                            // debug info
-                            this.debug('changeMyPasswordMixin error: ')
-                            this.debug(this.getResponseMessage(error.response))
-                            // error callback
-                            this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'changeMyPassword')
-                            // show error message
-                            var message = this.getErrorMessage(this, error.response)
-                            this.updateProfileImageNotification({
-                                message: message,
-                                timeout: 5000,
-                                type: 'error'
-                            })
-                        })
+                        this.changeMyPassword(profileBody)
                     } else {
                         // debug info
                         this.debug('old password is the same as new password')
@@ -409,6 +391,41 @@ export default {
                     // debug info
                     this.debug('update password form has errors')
                 }
+            })
+        },
+        changeMyPassword: function(postBody) {
+            var authHeader = this.getAuthorizationHeaderMixin()
+            this.changeMyPasswordMixin(this.apiUrl, postBody, authHeader).then((response) => {
+                // debug info
+                this.debug('changeMyPasswordMixin response: ')
+                this.debug(this.getResponseData(response))
+                // success callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'changeMyPassword')
+                // show success message
+                var message = this.getErrorMessage(this, {
+                    data: {
+                        status: 'password_updated',
+                        message: 'Password updated.'
+                    }
+                })
+                this.updateProfileImageNotification({
+                    message: message,
+                    timeout: 5000,
+                    type: 'success'
+                })
+            }, (error) => {
+                // debug info
+                this.debug('changeMyPasswordMixin error: ')
+                this.debug(this.getResponseMessage(error.response))
+                // error callback
+                this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'changeMyPassword')
+                // show error message
+                var message = this.getErrorMessage(this, error.response)
+                this.updateProfileImageNotification({
+                    message: message,
+                    timeout: 5000,
+                    type: 'error'
+                })
             })
         },
         setUserLinks: function(apiUrl, userLinksBody) {
@@ -697,10 +714,26 @@ export default {
         },
         removeSkill: function(index) {
             this.selectedSkills.splice(index, 1)
+        },
+        updateProfileEditable: function(postBody, type) {
+            // debug info
+            // this.debug(postBody)
+            if (type === 'language') {
+                this.updateMyProfile(this.apiUrl, postBody)
+            } else if (type === 'password') {
+                let passwordBody = {
+                    new_password: postBody.credentials.newPassword
+                }
+                this.debug(passwordBody)
+                this.changeMyPassword(passwordBody)
+            } else {
+                // debug info
+                this.debug('profile editable type "' + type + '" not implemented')
+            }
         }
     },
     computed: {
-        userName: function() {
+        userFullName: function() {
             return this.profile.first_name + ' ' + this.profile.last_name
         },
         placeholderImage: function() {
@@ -762,6 +795,9 @@ export default {
             if (this.logoutRedirectPath && this.userId === 'me') {
                 this.openUrl(this.logoutRedirectPath + this.profile.user_id + '/')
             }
+            this.setup()
+        }.bind(this))
+        this.$root.eventBus.$on('profile', function() {
             this.setup()
         }.bind(this))
     },

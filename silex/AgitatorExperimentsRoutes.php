@@ -61,8 +61,8 @@ $agitator->get('/experiments/addmoretags/{langCode}', function ($langCode, Reque
 		$tag->setLabel($tagLabel, $langCode);
 		$tagRepository->save($tag);
 
-	} 
-	
+	}
+
 	return print_r($newTags, true);
 
 })->before($adminOnly);
@@ -75,7 +75,7 @@ $agitator->get('/experiments/tags/{langCode}', function ($langCode, Request $req
 
 	$allTags = $tagRepository->getAll();
 
-	$tagsRespone = array();
+	$tagsResponse = array();
 
 	foreach ($allTags as $tag) {
 
@@ -92,7 +92,33 @@ $agitator->get('/experiments/tags/{langCode}', function ($langCode, Request $req
 
 });
 
+$agitator->post('/experiments/{experimentId}/publish/', function ($experimentId, Request $request) use ($app) {
 
+    $editor = $app['experimentEditor'];
+
+	$editor->setExperimentById($experimentId);
+
+    $editor->publishExperiment();
+
+	$response['status'] = "success";
+	$response['message'] = "Experiment is published.";
+	return $app->json($response);
+
+});
+
+$agitator->delete('/experiments/{experimentId}/publish/', function ($experimentId, Request $request) use ($app) {
+
+    $editor = $app['experimentEditor'];
+
+	$editor->setExperimentById($experimentId);
+
+    $editor->unpublishExperiment();
+
+	$response['status'] = "success";
+	$response['message'] = "Experiment is unpublished.";
+	return $app->json($response);
+
+});
 
 
 $agitator->post('/experiments/{experimentId}/likes/', function ($experimentId, Request $request) use ($app) {
@@ -165,12 +191,11 @@ $agitator->get('/experiments/{experimentId}/{langCode}', function ($experimentId
 
 $agitator->patch('/experiments/{experimentId}/funding/', function ($experimentId, Request $request) use ($app) {
 
-
-	$experimentEditor = $app['experimentEditor'];
-	$experimentEditor->setExperimentById($experimentId);
+	$editor = $app['experimentEditor'];
+	$editor->setExperimentById($experimentId);
 
 	$funding = $request->request->all();
-	$experimentEditor->updateFunding($funding);
+	$editor->updateFunding($funding);
 
 	$response['status'] = "success";
 	return $app->json($response);
@@ -242,11 +267,7 @@ $agitator->post('/experiments/', function (Request $request) use ($app) {
 
 	$interactor = $app['experimentInteractor'];
 
-	$editor = new Karolina\Experiment\ExperimentEditor(
-		$app['currentUser'],
-		$interactor,
-		new Karolina\Experiment\ExperimentRepository($app['ci'])
-		);
+	$editor = $app['experimentEditor'];
 
 	if ($stage = $request->request->get('stage')) {
 
@@ -254,7 +275,7 @@ $agitator->post('/experiments/', function (Request $request) use ($app) {
 
 	} else {
 
-		$experimentId = $editor->createNew($stage);
+		$experimentId = $editor->createNew();
 
 	}
 
@@ -274,8 +295,8 @@ $agitator->patch('/experiments/{experimentId}/settings/', function ($experimentI
 	$editor = new Karolina\Experiment\ExperimentEditor(
 		$app['currentUser'],
 		$interactor,
-		new Karolina\Experiment\ExperimentRepository($app['ci'])
-
+		new Karolina\Experiment\ExperimentRepository($app['ci']),
+        $app['platform']
 		);
 
 	$newSettings = $request->request->get('settings');
@@ -295,10 +316,11 @@ $agitator->patch('/experiments/{experimentId}/image_collection/', function ($exp
 	$interactor = $app['experimentInteractor'];
 	$interactor->setExperimentById($experimentId);
 
-	$editor = new Karolina\Experiment\ExperimentEditor(
+    $editor = new Karolina\Experiment\ExperimentEditor(
 		$app['currentUser'],
 		$interactor,
-		new Karolina\Experiment\ExperimentRepository($app['ci'])
+		new Karolina\Experiment\ExperimentRepository($app['ci']),
+        $app['platform']
 		);
 
 	$imageCollectionData = $request->request->get('image_collection');
@@ -315,10 +337,11 @@ $agitator->patch('/experiments/{experimentId}/custom_language/{langCode}/', func
 	$interactor = $app['experimentInteractor'];
 	$interactor->setExperimentById($experimentId);
 
-	$editor = new Karolina\Experiment\ExperimentEditor(
+    $editor = new Karolina\Experiment\ExperimentEditor(
 		$app['currentUser'],
 		$interactor,
-		new Karolina\Experiment\ExperimentRepository($app['ci'])
+		new Karolina\Experiment\ExperimentRepository($app['ci']),
+        $app['platform']
 		);
 
 
@@ -349,11 +372,11 @@ $agitator->patch('/experiments/{experimentId}/settings/', function ($experimentI
 	$interactor = $app['experimentInteractor'];
 	$interactor->setExperimentById($experimentId);
 
-	$editor = new Karolina\Experiment\ExperimentEditor(
+    $editor = new Karolina\Experiment\ExperimentEditor(
 		$app['currentUser'],
 		$interactor,
-		new Karolina\Experiment\ExperimentRepository($app['ci'])
-
+		new Karolina\Experiment\ExperimentRepository($app['ci']),
+        $app['platform']
 		);
 
 	$newSettings = $request->request->get('settings');
@@ -373,10 +396,11 @@ $agitator->patch('/experiments/{experimentId}/language/{langCode}/', function ($
 
 	$interactor->setExperimentById($experimentId);
 
-	$editor = new Karolina\Experiment\ExperimentEditor(
+    $editor = new Karolina\Experiment\ExperimentEditor(
 		$app['currentUser'],
 		$interactor,
-		$repository
+		new Karolina\Experiment\ExperimentRepository($app['ci']),
+        $app['platform']
 		);
 
 	$language = $request->request->get('language');

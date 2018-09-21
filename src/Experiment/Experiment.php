@@ -26,13 +26,13 @@ Class Experiment {
     private $questions = array();
 
 
-    public function __construct () {
+    public function __construct ($currency = 'EUR') {
 
     	$this->languageFields = new \Karolina\Language\LanguageFields();
     	$this->customLanguageFields = new \Karolina\Language\LanguageFields();
         $this->team = new \Karolina\Team\Team();
-        $this->fundingSources = new FundingSources();
-        $this->fundingGoalCurrency = new \Karolina\Currency('EUR');
+        $this->fundingSources = new FundingSources($currency);
+        $this->fundingGoalCurrency = new \Karolina\Currency($currency);
         $this->network = new \Karolina\Network\Root(
             new \Karolina\Network\Node('experiments')
             );

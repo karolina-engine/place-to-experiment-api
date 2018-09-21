@@ -194,8 +194,8 @@ $agitator->get('/users/{userId}/profile', function ($userId, Request $request) u
 	$currentUser = $app['currentUser'];
 
 	$getProfile = new Karolina\User\Action\GetProfile(
-		$currentUser, 
-		new \Karolina\User\UserRepository($app['ci']), 
+		$currentUser,
+		new \Karolina\User\UserRepository($app['ci']),
 		$app['platform']->getImgStorageUrl(),
         $app['platform']
 		);
@@ -207,11 +207,13 @@ $agitator->get('/users/{userId}/profile', function ($userId, Request $request) u
 		$getProfile = $getProfile->withExperiments($app['experimentInteractor']);
 	}
 
+    $getProfile = $getProfile->withAcl();
+
 	$response = $getProfile->getResponse();
 
 	$response['status'] = "success";
 	return $app->json($response);
-	
+
 });
 
 
@@ -231,6 +233,8 @@ $agitator->patch('/users/me/profile', function (Request $request) use ($app) {
 	$profile['description'] = $request->request->get('long_description');
 	$profile['firstName'] = $request->request->get('first_name');
 	$profile['lastName'] = $request->request->get('last_name');
+	$profile['phone'] = $request->request->get('phone');
+	$profile['documentNumber'] = $request->request->get('document_number');
 
 	// Process images
 	$imageFileRepository = new \Karolina\Image\ImageFileRepository($app['s3']);
@@ -242,7 +246,7 @@ $agitator->patch('/users/me/profile', function (Request $request) use ($app) {
 	$response['status'] = "success";
 
 	return $app->json($response);
-	
+
 })->before($authRequired);
 
 
@@ -265,7 +269,7 @@ $agitator->patch('/users/me/profile/image_collection', function (Request $reques
 	$response['status'] = "success";
 
 	return $app->json($response);
-	
+
 })->before($authRequired);
 
 
@@ -285,7 +289,7 @@ $agitator->post('/users/me/password', function (Request $request) use ($app) {
 	$response['status'] = "success";
 
 	return $app->json($response);
-	
+
 })->before($authRequired);
 
 

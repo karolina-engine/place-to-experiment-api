@@ -75,6 +75,7 @@ Temporary Items
 *.ser
 
 tests/_output/*
+tests/_support/_generated/*
 
 php.ini
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Karolina\User;
 
@@ -11,17 +11,17 @@ use Ramsey\Uuid\Uuid;
 use Communicator\SignedJwt as Message;
 
 Class UserRepository {
-    
+
     private $ci;
-    
+
     public function __construct ($ci = false) {
-        
+
         if ($ci) {
-            
+
             $this->ci = $ci;
 
         }
-        
+
     }
 
     public function getAll () {
@@ -47,7 +47,7 @@ Class UserRepository {
 
     public function createNew (User $user) {
 
-    
+
         // Make extra sure that there is no other e-mail address like this registered
         $alreadyRegistered = \Karolina\Database\Table\User::withoutGlobalScope('enabled')->where('email', $user->getEmail())->count();
 
@@ -59,20 +59,20 @@ Class UserRepository {
                 null,
                 "error"
             );
-               
+
         }
 
         $profileModel = new \Karolina\Database\Table\Profile();
         $userModel = new \Karolina\Database\Table\User();
 
         $userModel->password = $user->getHashString();
-        $userModel->hash_type = $user->getHashType();            
-        $userModel->group_id = $user->getGroupId();            
-        $userModel->ip_address = $_SERVER['REMOTE_ADDR'];            
-        $userModel->username = $this->generateRandomUsername();            
-        $userModel->email = $user->getEmail();            
-        $userModel->created_on = time();            
-        $userModel->active = true;            
+        $userModel->hash_type = $user->getHashType();
+        $userModel->group_id = $user->getGroupId();
+        $userModel->ip_address = $_SERVER['REMOTE_ADDR'];
+        $userModel->username = $this->generateRandomUsername();
+        $userModel->email = $user->getEmail();
+        $userModel->created_on = time();
+        $userModel->active = true;
 
         $stuffedUserModel = $this->userToUserModel($user, $userModel);
         $stuffedUserModel->save();
@@ -81,6 +81,12 @@ Class UserRepository {
         $stuffedProfileModel = $this->userToModel($user, $profileModel);
         $stuffedProfileModel->user_id = $stuffedUserModel->id;
         $stuffedProfileModel->save();
+
+        // immediatelly write the document to the user profile
+        $userObject = $this->getFromUserModel($stuffedUserModel);
+        $document = $this->userToJsonDocument($userObject);
+        $profileModel->document = $document;
+        $profileModel->save();
 
         // Create an authorization
         $message = new Message(getenv('platform_secret_key'), 43200); // twelve hours
@@ -99,11 +105,11 @@ Class UserRepository {
         $message->fromTokenString($token);
         $claims = $message->readAll();
         return $claims;
-        
+
     }
 
     private function createFromEmail ($email, $name = false) {
-        
+
         $username = $this->generateRandomUsername();
         $password = bin2hex(openssl_random_pseudo_bytes(16));
 
@@ -127,26 +133,26 @@ Class UserRepository {
         } else {
 
             throw new KarolinaException("Error creating user. Invalid e-mail.");
-            
-        }        
-        
+
+        }
+
     }
-    
+
     public function findOrCreateFromEmail ($email, $name) {
 
             // Incredibly stupid hack to add space after email, some bug with active records?
-            $user_email = $email.' '; 
+            $user_email = $email.' ';
             $userModel = $this->ci->ion_auth->get_user_by_email($user_email);
 
             if (empty($userModel)) {
-                
+
                 $userId = $this->createFromEmail($email, $name);
                 $userModel = $this->ci->ion_auth->get_user($userId);
-                
-            }  
-            
+
+            }
+
             return $this->getFromUserModel($userModel);
-        
+
     }
 
     private function getFromEloquentModel ($userEloquentModel) {
@@ -177,7 +183,7 @@ Class UserRepository {
                 $hasher = new \Karolina\User\Hashers\NativeHasher();
 
             }
-            
+
             $user->setHasher($hasher);
 
             if ($profileModel->links) {
@@ -199,7 +205,7 @@ Class UserRepository {
 
                 $tagRepository = new \Karolina\Tag\TagRepository();
                 $tags = $tagRepository->getTagsFromTagIdCollection(json_decode($profileModel->tags, true));
-                $user->replaceTags($tags);            
+                $user->replaceTags($tags);
 
             }
 
@@ -210,23 +216,27 @@ Class UserRepository {
             if (@json_decode($profileModel->content)) {
                 $profile->setDescription(new Field($profileModel->content, 'json'));
             } else {
-                $profile->setDescription(new Field($profileModel->content, 'html'));                
+                $profile->setDescription(new Field($profileModel->content, 'html'));
             }
 
             $user->setSettingsGroup($this->getSettingsGroup($userEloquentModel->settings));
 
             $user->setProfile($profile);
-            
+
             $user->setSkills($this->getSkills($profileModel->id));
 
             $user->setNetwork($this->getNetwork($userEloquentModel->id));
-            
+
+            $user->setPhone($profileModel->phone);
+
+            $user->setDocumentNumber($profileModel->document_number);
+
 
         } else {
 
             $user = new User($userEloquentModel->id, $userEloquentModel->email, 'Missing', 'profile');
 
-            
+
 
         }
         return $user;
@@ -255,7 +265,7 @@ Class UserRepository {
 
         return $this->getFromEloquentModel($userEloquentModel);
 
-        
+
 
     }
 
@@ -282,7 +292,7 @@ Class UserRepository {
 
         $model->settings = json_encode($user->getAllSettings());
 
-        return $model;   
+        return $model;
 
     }
 
@@ -292,8 +302,10 @@ Class UserRepository {
         $model->content = $user->getProfileDescription();
         $model->first_name = $user->getFirstName();
         $model->last_name = $user->getLastName();
+        $model->phone = $user->getPhone();
+        $model->document_number = $user->getDocumentNumber();
 
-        return $model;   
+        return $model;
 
     }
 
@@ -369,7 +381,7 @@ Class UserRepository {
         if ($user->getNewPassword() != null) {
 
             $userModel->password = $user->getHashString();
-            $userModel->hash_type = $user->getHashType();            
+            $userModel->hash_type = $user->getHashType();
 
         }
 
@@ -433,17 +445,25 @@ Class UserRepository {
 
 	public function reWriteAllDocuments () {
 
-		$models = \Karolina\Database\Table\Profile::get();
+        $userModels = \Karolina\Database\Table\User::get();
 
-		foreach ($models as $model) {
+        $count = 0;
 
-			$user = $this->getFromUserModel($model);
-			$document = $this->userToJsonDocument($user);
-			$model->document = $document;
-			$model->save();
-		}
+        foreach ($userModels as $model) {
 
-		return count($models);
+            $user = $this->getFromUserModel($model);
+            $profileModel = \Karolina\Database\Table\Profile::where('user_id', $user->getId())->first();
+
+            if($profileModel){
+                $document = $this->userToJsonDocument($user);
+                $profileModel->document = $document;
+                $profileModel->save();
+                $count++;
+            }
+
+        }
+
+        return $count;
 
 	}
 
@@ -463,14 +483,14 @@ Class UserRepository {
     public function getByIdentifier ($identifier) { // email
 
         try {
-    
+
             $userEloquentModel = \Karolina\Database\Table\User::where('email', $identifier)->firstOrFail();
 
         } catch (\Exception $e) {
 
             throw new \Karolina\Exception('Could not find user', 'no_user_found', 404);
 
-        }        
+        }
 
         return $this->getFromEloquentModel($userEloquentModel);
 

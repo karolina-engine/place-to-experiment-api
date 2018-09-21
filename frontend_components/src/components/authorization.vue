@@ -88,9 +88,9 @@ export default {
                 })
             })
         },
-        processLogin: function(apiUrl, tokenString, redirect = false) {
+        processLogin: function(apiUrl, data, redirect = false) {
             var tokenObject = {
-                'string': tokenString,
+                'string': data.token.string,
                 'timestamp': this.getTimestamp()
             }
             this.setLocalStorageObjectMixin('token', tokenObject)
@@ -113,14 +113,21 @@ export default {
                     if (response.data.hasOwnProperty('profile')) {
                         this.profile = response.data.profile
                     }
+                    if (response.data.hasOwnProperty('acl')) {
+                        this.acl = response.data.acl
+                    }
                 }
                 var userDataObject = {
-                    'user_id': response.data.profile.user_id,
-                    'first_name': response.data.profile.first_name,
-                    'last_name': response.data.profile.last_name,
-                    'email': response.data.profile.email
+                    'user_id': this.profile.user_id,
+                    'first_name': this.profile.first_name,
+                    'last_name': this.profile.last_name,
+                    'email': this.profile.email,
+                    'phone': this.profile.phone,
+                    'document_number': this.profile.document_number
                 }
+                let userAclObject = this.acl
                 this.setLocalStorageObjectMixin('userData', userDataObject)
+                this.setLocalStorageObjectMixin('userAcl', userAclObject)
                 // emit event so that other components can react to login
                 this.$root.eventBus.$emit('profile')
             }, (error) => {

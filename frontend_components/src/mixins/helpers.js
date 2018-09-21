@@ -1,4 +1,9 @@
 export default {
+    data () {
+        return {
+            attributes: null
+        }
+    },
     methods: {
         debug: function (message) {
             console.log(message)
@@ -112,6 +117,46 @@ export default {
         getEmbedCode: function (url, width, height) {
             var embedCode = '<iframe width="' + width + '" height="' + height + '" src="' + url + '" frameborder="0" allowfullscreen></iframe>'
             return embedCode
+        },
+        getAttributeValue: function (key) {
+            if (this.attributes && this.attributes.hasOwnProperty(key)) {
+                return this.attributes[key]
+            } else {
+                this.debug('attribute key ' + key + ' not found')
+            }
+        },
+        setAttributeValue: function(key, value, propagate = false) {
+            if (this.attributes && this.attributes.hasOwnProperty(key)) {
+                this.attributes[key] = value
+                if (propagate) {
+                    this.$root.eventBus.$emit('set-attribute-value', key, value)
+                }
+            } else {
+                this.debug('attribute key ' + key + ' not found')
+            }
+        },
+        setAttributes: function() {
+            this.attributes = this.$attrs
+        },
+        isObject: function (obj) {
+            return obj === Object(obj)
+        },
+        cloneArrayOfJsonObjects: function(array) {
+            return JSON.parse(JSON.stringify(array))
+        },
+        cookieGet: function(name) {
+            var c = '; ' + document.cookie
+            var x = c.split('; ' + name + '=')
+            if (x.length === 2) {
+                return x.pop().split(';').shift()
+            }
+        },
+        cookieSet: function(name, value) {
+            var expires = ''
+            var date = new Date()
+            date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000))
+            expires = '; expires=' + date.toUTCString()
+            document.cookie = name + '=' + value + expires + '; path=/'
         }
     },
     computed: {
@@ -119,5 +164,15 @@ export default {
             var url = window.location.protocol + '//' + window.location.hostname + '/'
             return url
         }
+    },
+    created: function() {
+        this.$root.eventBus.$on('set-attribute-value', function(key, value) {
+            // this.debug('event received in: ' + this.$options.name)
+            this.setAttributeValue(key, value)
+        }.bind(this))
+    },
+    mounted: function() {
+        // set up non-defined props
+        this.setAttributes()
     }
 }

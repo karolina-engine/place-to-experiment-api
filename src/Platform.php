@@ -4,7 +4,7 @@ namespace Karolina;
 use Noodlehaus\Config;
 
 Class Platform {
-	
+
     public $conf;
     public $Currency;
     private $eventPublisher;
@@ -28,7 +28,7 @@ Class Platform {
 
     public function getCurrencyISO () {
 
-        return $this->Currency;
+        return $this->Currency->getISO();
     }
 
     public function setCI ($ci) {

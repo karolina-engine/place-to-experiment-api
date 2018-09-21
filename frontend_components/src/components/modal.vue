@@ -4,6 +4,7 @@
 
 <script>
 import helpers from '../mixins/helpers.js'
+import auth from '../mixins/auth.js'
 export default {
     name: 'modal',
     data() {
@@ -19,7 +20,8 @@ export default {
         }
     },
     mixins: [
-        helpers
+        helpers,
+        auth
     ],
     methods: {
         setShowModal: function(show) {

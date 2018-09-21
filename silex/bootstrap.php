@@ -171,7 +171,8 @@ $app['experimentEditor'] = function ($app) {
 	$editor = new Karolina\Experiment\ExperimentEditor(
 		$app['currentUser'],
 		$app['experimentInteractor'],
-		new Karolina\Experiment\ExperimentRepository($app['ci'])
+		new Karolina\Experiment\ExperimentRepository($app['ci']),
+        $app['platform']
 		);
 
 	return $editor;

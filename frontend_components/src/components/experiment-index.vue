@@ -295,6 +295,10 @@ export default {
                     // debug info
                     this.debug('sorting by ID')
                     return this.sortExperimentsById(experiments)
+                } else if (this.currentSortObject.key === 'stage') {
+                    // debug info
+                    this.debug('sorting by stage')
+                    return this.sortExperimentsByStage(experiments)
                 } else {
                     this.debug('unsupported sorting option')
                 }
@@ -309,6 +313,13 @@ export default {
                 return (likeCountA > likeCountB) ? -1 : (likeCountA < likeCountB) ? 1 : 0
             })
         },
+        sortExperimentsByStage: function(experiments) {
+            return experiments.sort(function(a, b) {
+                var stageA = a.stage
+                var stageB = b.stage
+                return (stageA > stageB) ? -1 : (stageA < stageB) ? 1 : 0
+            })
+        },
         sortExperimentsByTitle: function(experiments) {
             return experiments.sort(function(a, b) {
                 var titleA = a.title
@@ -321,6 +332,13 @@ export default {
                 var idA = parseInt(a.experiment_id)
                 var idB = parseInt(b.experiment_id)
                 return (idA > idB) ? -1 : (idA < idB) ? 1 : 0
+            })
+        },
+        sortTagsByLabel: function(tags) {
+            return tags.slice().sort(function(a, b) {
+                var titleA = a.label.trim().toLowerCase()
+                var titleB = b.label.trim().toLowerCase()
+                return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0
             })
         },
         triggerSort: function(sortOption) {
@@ -344,6 +362,35 @@ export default {
             } else {
                 return false
             }
+        },
+        getExperimentCreator: function(experiment) {
+            if (experiment.hasOwnProperty('team')) {
+                if (experiment.team.length > 0) {
+                    return experiment.team[0] // for now we only have 1 team member, the creator
+                }
+            }
+            return null
+        },
+        getExperimentCreatorName: function(experiment) {
+            let creator = this.getExperimentCreator(experiment)
+            if (creator) {
+                return creator.first_name + ' ' + creator.last_name
+            }
+            return null
+        },
+        getExperimentCreatorImage: function(experiment) {
+            let creator = this.getExperimentCreator(experiment)
+            if (creator) {
+                return creator.image
+            }
+            return null
+        },
+        getShowIn: function(experiment, place) {
+            let value = false
+            if (experiment.show_in.hasOwnProperty(place)) {
+                value = experiment.show_in[place]
+            }
+            return value
         }
     },
     computed: {

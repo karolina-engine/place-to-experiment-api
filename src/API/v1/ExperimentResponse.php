@@ -70,6 +70,8 @@ Class ExperimentResponse extends Response {
 			$response['team_emails'] = NULL;
 		}
 
+        $response['team'] = (new TeamResponse($doc['team'], $imgStorageUrl))->get();
+
 		$response['tags'] = (new TagsResponse($doc['tags'], $this->langCode))->get();
 
 		return $response;

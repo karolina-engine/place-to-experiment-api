@@ -34,7 +34,7 @@ env:
         modules:
             config:
                 WebDriver:
-                    url: http://place-to-experiment.dev/
+                    url: http://place-to-experiment.test/
                     browser: chrome
                     window_size: maximize
     local-firefox:
@@ -46,7 +46,7 @@ env:
         modules:
             config:
                 WebDriver:
-                    url: http://place-to-experiment.dev/
+                    url: http://place-to-experiment.test/
                     browser: firefox
     local-ie:
         extensions:
@@ -57,7 +57,7 @@ env:
         modules:
             config:
                 WebDriver:
-                    url: http://place-to-experiment.dev/
+                    url: http://place-to-experiment.test/
                     browser: internet explorer
                     window_size: maximize
                     capabilities:
@@ -72,7 +72,7 @@ env:
         modules:
             config:
                 WebDriver:
-                    url: http://place-to-experiment.dev/
+                    url: http://place-to-experiment.test/
                     browser: MicrosoftEdge
                     window_size: maximize
     local-safari:
@@ -84,7 +84,7 @@ env:
         modules:
             config:
                 WebDriver:
-                    url: http://place-to-experiment.dev/
+                    url: http://place-to-experiment.test/
                     browser: safari
                     window_size: maximize
                     capabilities:

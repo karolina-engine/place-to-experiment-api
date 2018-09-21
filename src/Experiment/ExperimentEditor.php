@@ -7,21 +7,21 @@ Class ExperimentEditor {
 	private $currentUser;
 	private $interactor;
 	private $repository;
+	private $platform;
 
-	public function __construct ($currentUser, $interactor, $repository) {
+	public function __construct ($currentUser, $interactor, $repository, $platform) {
 
 		$this->currentUser = $currentUser;
 		$this->interactor = $interactor;
 		$this->repository = $interactor->getRepository();
+		$this->platform = $platform;
 
 	}
 
 	public function createNew ($stage = false) {
-
-		$newExperiment = new Experiment();
+        
+		$newExperiment = new Experiment($this->platform->getCurrencyISO());
 		$newExperiment->addCreator($this->currentUser);
-
-        $newExperiment->setPlaceToShow('index', TRUE);
 
 		if ($stage) {
 			$newExperiment->setStage($stage);
@@ -39,6 +39,40 @@ Class ExperimentEditor {
 		$this->interactor->setExperimentById($experimentId);
 
 	}
+
+    public function publishExperiment (){
+
+        $experiment = $this->interactor->getExperiment();
+
+        if ($experiment->canEditSettings($this->currentUser)) {
+
+            $experiment->setPlaceToShow('index', TRUE);
+
+            $this->repository->save($experiment);
+
+        } else {
+
+			throw new \Karolina\Exception("Current user is not authorized to update settings", "access_denied", 401);
+
+		}
+    }
+
+    public function unpublishExperiment (){
+
+        $experiment = $this->interactor->getExperiment();
+
+        if ($experiment->canEditSettings($this->currentUser)) {
+
+            $experiment->setPlaceToShow('index', FALSE);
+
+            $this->repository->save($experiment);
+
+        } else {
+
+			throw new \Karolina\Exception("Current user is not authorized to update settings", "access_denied", 401);
+
+		}
+    }
 
 	public function updateSettings ($newSettings) {
 

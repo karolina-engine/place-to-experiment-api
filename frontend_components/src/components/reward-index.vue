@@ -5,6 +5,7 @@
 <script>
 import campaigns from '../mixins/campaigns.js'
 import rewards from '../mixins/rewards.js'
+import date from '../mixins/date.js'
 import auth from '../mixins/auth.js'
 import helpers from '../mixins/helpers.js'
 export default {
@@ -73,6 +74,7 @@ export default {
     mixins: [
         campaigns,
         rewards,
+        date,
         auth,
         helpers
     ],
@@ -497,6 +499,15 @@ export default {
             } else {
                 return this.customQuestions.length - 1
             }
+        }
+    },
+    watch: {
+        campaignId: function() {
+            this.reward = this.common.placeholders.reward
+            this.rewards = []
+            this.campaign = null
+            this.acl = []
+            this.setup()
         }
     },
     created: function() {

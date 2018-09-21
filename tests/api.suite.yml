@@ -23,4 +23,4 @@ env:
         modules:
             config:
                 REST:
-                    url: http://place-to-experiment.dev/agitator
+                    url: http://place-to-experiment.test/agitator

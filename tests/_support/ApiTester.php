@@ -475,4 +475,46 @@ class ApiTester extends \Codeception\Actor
             $this->setRole($currentRole);
         }
     }
+
+    public function publishExperimentResponse($experiment_id, $overrideRoleAndAuthorization = false)
+    {
+        if ($overrideRoleAndAuthorization) {
+            $currentAuthorization = $this->getAuthorization();
+            $this->setAuthorization(true);
+            $currentRole = $this->getRole();
+            $this->setRole('creator');
+        }
+
+        $endpoint = '/experiments/'.$experiment_id.'/publish/';
+
+        $this->setHeaders($this);
+        $this->sendPOST($endpoint);
+
+        //$this->comment($this->grabResponse());
+        if ($overrideRoleAndAuthorization) {
+            $this->setAuthorization($currentAuthorization);
+            $this->setRole($currentRole);
+        }
+    }
+
+    public function unpublishExperimentResponse($experiment_id, $overrideRoleAndAuthorization = false)
+    {
+        if ($overrideRoleAndAuthorization) {
+            $currentAuthorization = $this->getAuthorization();
+            $this->setAuthorization(true);
+            $currentRole = $this->getRole();
+            $this->setRole('creator');
+        }
+
+        $endpoint = '/experiments/'.$experiment_id.'/publish/';
+
+        $this->setHeaders($this);
+        $this->sendDELETE($endpoint);
+
+        //$this->comment($this->grabResponse());
+        if ($overrideRoleAndAuthorization) {
+            $this->setAuthorization($currentAuthorization);
+            $this->setRole($currentRole);
+        }
+    }
 }

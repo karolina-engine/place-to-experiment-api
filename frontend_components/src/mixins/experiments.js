@@ -116,6 +116,20 @@ export default {
                 }
             })
         },
+        publishExperimentMixin: function (apiUrl, experimentId, authHeader) {
+            return this.$http.post(apiUrl + '/experiments/' + experimentId + '/publish/', {}, {
+                headers: {
+                    'Authorization': authHeader
+                }
+            })
+        },
+        unpublishExperimentMixin: function (apiUrl, experimentId, authHeader) {
+            return this.$http.delete(apiUrl + '/experiments/' + experimentId + '/publish/', {
+                headers: {
+                    'Authorization': authHeader
+                }
+            })
+        },
         getExperimentPicUrl: function (placeholderImage, experimentObject, imageKey, h, w) {
             if (experimentObject.image_collection) {
                 if (experimentObject.image_collection[imageKey]) {
