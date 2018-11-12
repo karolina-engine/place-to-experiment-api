@@ -5,9 +5,9 @@ namespace Karolina\User;
 use \Karolina\Event\Subscriber;
 
 Class UserEveryMinuteSubscription implements Subscriber {
-	
 
-	public function __construct () 
+
+	public function __construct ()
 
 	{
 
@@ -18,7 +18,7 @@ Class UserEveryMinuteSubscription implements Subscriber {
 
 		$notification = new \Karolina\Notification();
 		$notification->setSubject('There has been a new minute!');
-		$notification->setSingleRecipient('arnarfjodur@gmail.com');
+		$notification->setSingleRecipient('admin@karolina.io');
 		$notification->setBodyFromPlaintext('A new minute, new opportunities.');
 		$notification->send();
 
@@ -36,5 +36,5 @@ Class UserEveryMinuteSubscription implements Subscriber {
 		return false;
 
 	}
- 
+
 }

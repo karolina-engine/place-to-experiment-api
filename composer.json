@@ -3,8 +3,7 @@
     "version": "1.0.0",
     "description": "Place to experiment backend API, created by Karolina fund",
     "authors": [{
-            "name": "Arnar Sigurdsson",
-            "email": "arnar@karolinafund.com"
+            "name": "Arnar Sigurdsson"
         },
         {
             "name": "Dani Planinc",
