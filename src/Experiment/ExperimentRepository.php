@@ -23,6 +23,9 @@ Class ExperimentRepository {
 		$experiment = new \Karolina\Experiment\Experiment();
 
 		$experiment->setStage($model->stage);
+		$experiment->setCreatedAt($model->created_at);
+		$experiment->setUpdatedAt($model->updated_at);
+		$experiment->setStage($model->stage);
 		$experiment->setSettingsGroup($this->getSettingsGroup($model->settings));
 		$experiment->setId($model->experiment_id);
 
@@ -112,6 +115,12 @@ Class ExperimentRepository {
 	private function experimentToModel (Experiment $experiment, $model) {
 
 		$model->stage = $experiment->getStage();
+		if($experiment->getCreatedAt()){
+			$model->created_at = $experiment->getCreatedAt();
+		}
+		if($experiment->getUpdatedAt()){
+			$model->updated_at = $experiment->getUpdatedAt();
+		}
 
 		if ($experiment->isEnabled()) {
 			$model->disabled = 0;
@@ -165,6 +174,8 @@ Class ExperimentRepository {
 	private function experimentToJsonDocument (Experiment $experiment) {
 
 		$doc['last_updated'] = time();
+		$doc['created_at'] = $experiment->getCreatedAt();
+		$doc['updated_at'] = $experiment->getUpdatedAt();
 		$doc['experiment_id'] = (string) $experiment->getId();
 		$doc['stage'] = (string) $experiment->getStage();
 		$doc['custom_language'] = $experiment->getCustomLanguageFields()->getDocument();
@@ -309,7 +320,7 @@ Class ExperimentRepository {
 			} else {
 
 					$stats['count'] = \Karolina\Database\Table\Experiment::count();
-					
+
 			}
 
 	    return $stats;

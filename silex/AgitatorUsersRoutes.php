@@ -207,7 +207,7 @@ $agitator->get('/users/{userId}/profile', function ($userId, Request $request) u
 		$getProfile = $getProfile->withExperiments($app['experimentInteractor']);
 	}
 
-    $getProfile = $getProfile->withAcl();
+    // $getProfile = $getProfile->withAcl();
 
 	$response = $getProfile->getResponse();
 

@@ -18,7 +18,7 @@ Class UserEveryMinuteSubscription implements Subscriber {
 
 		$notification = new \Karolina\Notification();
 		$notification->setSubject('There has been a new minute!');
-		$notification->setSingleRecipient('admin@karolina.io');
+		$notification->setSingleRecipient('monitor@karolina.io');
 		$notification->setBodyFromPlaintext('A new minute, new opportunities.');
 		$notification->send();
 

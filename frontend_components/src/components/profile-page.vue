@@ -141,7 +141,7 @@ export default {
                     if (this.isEditable) {
                         this.getTagsForExperiments(apiUrl, this.language)
                     }
-                    this.setUserAcl()
+                    // this.setUserAcl()
                 }, (error) => {
                     // debug info
                     this.debug('getProfileMixin error: ')
@@ -187,7 +187,7 @@ export default {
                 if (this.isEditable) {
                     this.getTagsForExperiments(apiUrl, this.language)
                 }
-                this.setUserAcl()
+                // this.setUserAcl()
             }, (error) => {
                 // debug info
                 this.debug('getMyProfileMixin error: ')

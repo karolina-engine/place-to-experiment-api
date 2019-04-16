@@ -93,7 +93,7 @@ CREATE TABLE `kf_groups` (
 
 LOCK TABLES `kf_groups` WRITE;
 /*!40000 ALTER TABLE `kf_groups` DISABLE KEYS */;
-INSERT INTO `kf_groups` VALUES (1,'admin','Administrator'),(2,'members','General Kokeilun'),(3,'staff','Platform staff');
+INSERT INTO `kf_groups` VALUES (1,'admin','Administrator'),(2,'members','General'),(3,'staff','Platform staff');
 /*!40000 ALTER TABLE `kf_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -110,7 +110,7 @@ CREATE TABLE `kf_lang_fields` (
   `lang_code` varchar(2) NOT NULL,
   `object_id` int(200) NOT NULL,
   `object_type` varchar(200) NOT NULL,
-  `content` text NOT NULL,
+  `content` mediumtext NOT NULL,
   `format` varchar(200) NOT NULL,
   `type` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -143,7 +143,7 @@ CREATE TABLE `kf_profiles` (
   `company` varchar(100) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
   `document_number` varchar(20) DEFAULT NULL,
-  `profile_pic` varchar(200) NOT NULL,
+  `profile_pic` varchar(200) DEFAULT NULL,
   `description` varchar(400) DEFAULT NULL,
   `content` mediumtext,
   `images` json DEFAULT NULL,
@@ -444,7 +444,7 @@ CREATE TABLE `kf_users` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `group_id` mediumint(8) unsigned NOT NULL,
   `ip_address` char(16) NOT NULL,
-  `username` varchar(15) NOT NULL,
+  `username` varchar(40) NOT NULL,
   `password` varchar(255) NOT NULL,
   `hash_type` varchar(35) NOT NULL DEFAULT 'ion',
   `salt` varchar(40) DEFAULT NULL,

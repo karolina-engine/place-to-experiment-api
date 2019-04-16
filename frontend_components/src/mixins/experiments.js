@@ -109,8 +109,8 @@ export default {
                 }
             })
         },
-        moveExperimentToNextStageMixin: function (apiUrl, experimentId, authHeader) {
-            return this.$http.post(apiUrl + '/experiments/' + experimentId + '/stagemoves/', {}, {
+        moveExperimentStageMixin: function (apiUrl, experimentId, direction, authHeader) {
+            return this.$http.post(apiUrl + '/experiments/' + experimentId + '/stagemoves/', {direction: direction}, {
                 headers: {
                     'Authorization': authHeader
                 }

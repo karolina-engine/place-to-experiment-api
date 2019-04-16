@@ -32,7 +32,7 @@ $agitator->get('/experiments/preview/{langCode}', function ($langCode, Request $
 	foreach ($experimentsPreviews as $preview) {
 
 		$response['previews'][]
-			= (new Karolina\API\v1\ExperimentResponse($preview, 'EN', $app['platform']))->getPreview($showTeamEmails);
+			= (new Karolina\API\v1\ExperimentResponse($preview, $langCode, $app['platform']))->getPreview($showTeamEmails);
 
 	}
 
@@ -136,10 +136,7 @@ $agitator->post('/experiments/{experimentId}/likes/', function ($experimentId, R
 
 	} else {
 
-		$response['status'] = "error";
-		$response['message'] = "Not logged in";
-
-		return $app->json($response);
+		throw new Karolina\KarolinaException('You are not logged in', 401, null, 'not_authorized');
 	}
 
 
@@ -160,10 +157,7 @@ $agitator->delete('/experiments/{experimentId}/likes/', function ($experimentId,
 
 	} else {
 
-		$response['status'] = "error";
-		$response['message'] = "Not logged in";
-
-		return $app->json($response);
+		throw new Karolina\KarolinaException('You are not logged in', 401, null, 'not_authorized');
 	}
 
 
@@ -225,12 +219,25 @@ $agitator->post('/experiments/{experimentId}/stagemoves/', function ($experiment
 	$editor = $app['experimentEditor'];
 	$editor->setExperimentById($experimentId);
 
-	$editor->moveToNextStage();
+    $direction = $request->request->get('direction');
 
-	$response['status'] = "success";
-	$response['message'] = "Stage has been updated.";
+    switch ($direction) {
+        case 'next':
+            $editor->moveToNextStage();
+        	$response['status'] = "success";
+        	$response['message'] = "Stage has been updated.";
+            break;
+        case 'previous':
+            $editor->moveToPreviousStage();
+        	$response['status'] = "success";
+        	$response['message'] = "Stage has been updated.";
+            break;
+        default:
+            throw new Karolina\KarolinaException('You need to provide direction', 400, null, 'missing_request_parameters');
+            break;
+    }
+
 	return $app->json($response);
-
 
 });
 

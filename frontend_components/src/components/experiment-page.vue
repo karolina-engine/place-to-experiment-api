@@ -105,7 +105,7 @@ export default {
         updateExperimentImageNotification: {},
         getTagsForExperimentsNotification: {},
         updateExperimentFundingNotification: {},
-        goToTheNextStageNotification: {},
+        moveStageNotification: {},
         setExperimentLinksNotification: {},
         setTagsForExperimentNotification: {},
         publishExperimentNotification: {},
@@ -181,6 +181,7 @@ export default {
             this.myRelationships = remoteMyRelationshipsData
             var remoteAclData = remoteData.acl
             this.acl = remoteAclData
+            this.setLocalStorageObjectMixin('userAcl', this.acl)
             this.setUserAcl()
             this.experimentLinks = JSON.parse(JSON.stringify(remoteExperimentData.links))
             this.experimentLocation = remoteExperimentData.geographic_location
@@ -585,31 +586,31 @@ export default {
                 }
             }
         },
-        goToTheNextStage: function() {
+        moveStage: function(direction) {
             var authHeader = this.getAuthorizationHeaderMixin()
-            this.moveExperimentToNextStageMixin(this.apiUrl, this.experimentId, authHeader).then((response) => {
+            this.moveExperimentStageMixin(this.apiUrl, this.experimentId, direction, authHeader).then((response) => {
                 // debug info
-                this.debug('moveExperimentToNextStageMixin response: ')
+                this.debug('moveExperimentStageMixin response: ')
                 this.debug(this.getResponseData(response))
                 // success callback
-                this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'goToTheNextStage')
+                this.responseStatus = this.setResponseStatus(this.responseStatus, response, 'moveStage')
                 // fetch the experiment to get possible other back-end changes
                 this.getExperiment(this.apiUrl, this.experimentId, this.language)
                 var message = this.getResponseMessage(response)
-                this.goToTheNextStageNotification({
+                this.moveStageNotification({
                     message: message,
                     timeout: 5000,
                     type: 'success'
                 })
             }, (error) => {
                 // debug info
-                this.debug('moveExperimentToNextStageMixin error: ')
+                this.debug('moveExperimentStageMixin error: ')
                 this.debug(this.getResponseMessage(error.response))
                 // error callback
-                this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'goToTheNextStage')
+                this.responseStatus = this.setResponseStatus(this.responseStatus, error.response, 'moveStage')
                 // show error message
                 var message = this.getErrorMessage(this, error.response)
-                this.goToTheNextStageNotification({
+                this.moveStageNotification({
                     message: message,
                     timeout: 5000,
                     type: 'error'

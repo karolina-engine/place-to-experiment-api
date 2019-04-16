@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Karolina\Experiment;
 use Respect\Validation\Validator as v;
@@ -14,6 +14,8 @@ Class Experiment {
 
     private $id;
     private $stage = 0;
+    private $createdAt;
+    private $updatedAt;
     private $disabled = false;
     private $placesToShow = null;
     private $tags = array();
@@ -62,6 +64,20 @@ Class Experiment {
 
     }
 
+    public function moveToPreviousStage () {
+
+        if ($this->stage == 0) {
+
+            throw new \Karolina\Exception('You are already at the last stage. Your stage is: '.$this->getStage());
+
+        }
+
+        $previousStage = $this->stage - 1;
+
+        $this->setStage($previousStage);
+
+    }
+
     public function setGeographicLocation ($location) {
 
         $location = (string) $location;
@@ -84,7 +100,7 @@ Class Experiment {
 
         $newLinks = array();
         foreach ($links as $link) {
-    
+
             $newLinks[] = new \Karolina\Content\Link($link['url'], $link['title']);
 
         }
@@ -126,6 +142,28 @@ Class Experiment {
     public function setStage ($stage) {
 
         $this->stage = (int) $stage;
+
+    }
+
+    public function getCreatedAt () {
+
+        return (string)$this->createdAt;
+    }
+
+    public function setCreatedAt ($createdAt) {
+
+        $this->createdAt = $createdAt;
+
+    }
+
+    public function getUpdatedAt () {
+
+        return (string)$this->updatedAt;
+    }
+
+    public function setUpdatedAt ($updatedAt) {
+
+        $this->updatedAt = $updatedAt;
 
     }
 
@@ -329,11 +367,11 @@ Class Experiment {
     }
 
     public function getQuestionsDocument () {
-        
+
         $doc = array();
 
         if ($this->getQuestions()) {
-   
+
             foreach ($this->getQuestions() as $question) {
 
                 $answerDoc = $question->getAnswerDocument();
@@ -387,15 +425,15 @@ Class Experiment {
     */
 
     public function getPlacesToShow () {
- 
+
         if ($this->placesToShow == NULL) {
- 
+
             return new \stdClass();
- 
+
         } else {
- 
+
           return $this->placesToShow;
- 
+
         }
     }
 
@@ -430,15 +468,15 @@ Class Experiment {
 
     }
 
-    public function canEditWhereToShow (User $user) { 
-    
-        return $user->isAdmin(); 
-    
-    } 
-    
-    public function canEditAbility (User $user) { 
+    public function canEditWhereToShow (User $user) {
 
-        return $user->isAdmin(); 
+        return $user->isAdmin();
+
+    }
+
+    public function canEditAbility (User $user) {
+
+        return $user->isAdmin();
 
     }
 
@@ -450,7 +488,7 @@ Class Experiment {
 
     public function canEditFunding (User $user) {
 
-        return $user->isAdmin(); 
+        return $user->isAdmin();
 
     }
 

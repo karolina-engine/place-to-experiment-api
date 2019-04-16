@@ -85,6 +85,9 @@ Class ExperimentResponse extends Response {
 		$imgStorageUrl = $this->platform->getImgStorageUrl();
 
 		$response['stage'] = (int) $doc['stage'];
+		$response['created_at'] = $doc['created_at'];
+		$response['updated_at'] = $doc['updated_at'];
+		$response['stage'] = (int) $doc['stage'];
 		$response['geographic_location'] = (string) $doc['geographic_location'];
 
 		$response['like_count'] = (int) $doc['like_count'];

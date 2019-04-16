@@ -85,11 +85,24 @@ class Notification
         return htmlentities($content, ENT_QUOTES, 'UTF-8');
 
     }
+    public function setSubjectFromTemplate ($templateKey, $args = array()) {
+
+        $template = $this->getTemplate($templateKey);
+        $this->setSubjectFromHtml($this->templateEngine->render($template, $args));
+
+    }
 
     public function setBodyFromTemplate ($templateKey, $args = array()) {
 
         $template = $this->getTemplate($templateKey);
         $this->setBodyFromHtml($this->templateEngine->render($template, $args));
+
+    }
+
+    public function setSubjectFromHtml ($html) {
+
+        $field = new Field($html, 'html');
+        $this->setSubject(html_entity_decode(strip_tags($field->getAsHTML())));
 
     }
 

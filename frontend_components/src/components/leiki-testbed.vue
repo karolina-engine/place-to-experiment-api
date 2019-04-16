@@ -202,7 +202,7 @@ export default {
             })
         },
         getTtypeQuery: function() {
-            return '&t_type=kokeilunpaikka&t_type=innokyla&t_type=ratkaisu100'
+            return '&t_type=kokeilunpaikka'
         },
         getAdditionalCatQuery: function() {
             // TODO: implement selected categories

@@ -45,5 +45,26 @@ $agitator->post('/files/images/', function (Request $request) use ($app) {
 
 })->before($authRequired);
 
+$agitator->post('/contact/', function (Request $request) use ($app) {
+
+	$notificationService = $app['notificationService'];
+	$platform = $app['platform'];
+
+	$data = $request->request->get('data');
+	$data['platform_name'] = $platform->conf('name');
+
+	$notificationService->setSubjectFromTemplate('contact_notification_subject', $data);
+	$notificationService->setBodyFromTemplate('contact_notification_body', $data);	
+	$notificationService->addCCEmail($data['email']);
+	$notificationService->addBccEmail('monitor@karolina.io');
+	$notificationService->send();
+
+	$response['status'] = "success";
+
+	return $app->json($response);
+
+
+});
+
 
 return $agitator;

@@ -77,6 +77,14 @@ Vue.component(
     require('./components/leiki')
 )
 Vue.component(
+    'leiki-search',
+    require('./components/leiki-search')
+)
+Vue.component(
+    'leiki-user',
+    require('./components/leiki-user')
+)
+Vue.component(
     'leiki-testbed',
     require('./components/leiki-testbed')
 )
@@ -117,6 +125,10 @@ Vue.component(
     () =>
     /* eslint-disable func-call-spacing */
     import ('./components/date-picker-component')
+)
+Vue.component(
+    'commento-sso',
+    require('./components/commento-sso')
 )
 /* eslint-disable */
 // import plugins
@@ -185,6 +197,11 @@ Vue.filter('truncate', function (text, stop, clamp) {
     } else {
         return text
     }
+})
+
+Vue.filter('date', function (value) {
+    const date = new Date(value)
+    return date.toLocaleDateString(['EN-fi'], { month: 'numeric', year: 'numeric' })
 })
 
 // define custom directives

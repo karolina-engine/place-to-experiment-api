@@ -5,7 +5,7 @@ use Respect\Validation\Validator as v;
 use Karolina\Keyname;
 
 Class FundingSources {
-	
+
 	private $currency;
 	private $sources = array();
 
@@ -14,7 +14,7 @@ Class FundingSources {
 		$this->setFundingCurrency($currencyKey);
 
 	}
-   
+
 	public function setFundingCurrency ($currencyKey) {
 
 		$this->currency = new \Karolina\Currency($currencyKey);
@@ -44,7 +44,7 @@ Class FundingSources {
 
 		}
 
-		$sourceKey = (string) new Keyname($sourceKey);		
+		$sourceKey = (string) new Keyname($sourceKey);
 		$this->sources[$sourceKey]['api'] = $apiURL;
 		$this->sources[$sourceKey]['type'] = "external";
 		$this->sources[$sourceKey]['campaign_id'] = (string) $campaignId;
@@ -66,19 +66,23 @@ Class FundingSources {
 
 	public function setFromDocument ($doc) {
 
-		foreach ($doc as $sourceKey => $source) {
+    if(count($doc) > 0) {
 
-			if ($source['type'] == "internal") {
+  		foreach ($doc as $sourceKey => $source) {
 
-				$this->setFundingSource($sourceKey, $source['raised']);
+  			if ($source['type'] == "internal") {
 
-			} else if ($source['type'] == "external") {
+  				$this->setFundingSource($sourceKey, $source['raised']);
 
-				$this->setExternalFundingSource($sourceKey, $source['api'], $source['campaign_id']);
+  			} else if ($source['type'] == "external") {
 
-			}
+  				$this->setExternalFundingSource($sourceKey, $source['api'], $source['campaign_id']);
 
-		}
+  			}
+
+  		}
+
+    }
 
 	}
 

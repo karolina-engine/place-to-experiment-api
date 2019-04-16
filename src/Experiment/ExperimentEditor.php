@@ -19,7 +19,7 @@ Class ExperimentEditor {
 	}
 
 	public function createNew ($stage = false) {
-        
+
 		$newExperiment = new Experiment($this->platform->getCurrencyISO());
 		$newExperiment->addCreator($this->currentUser);
 
@@ -151,6 +151,22 @@ Class ExperimentEditor {
 		if ($this->currentUser and $experiment->canEditSettings($this->currentUser)) {
 
 			$experiment->moveToNextStage();
+			$this->repository->save($experiment);
+
+		} else {
+
+			throw new \Karolina\Exception("Current user is not authorized to change the stage", "access_denied", 401);
+		}
+
+	}
+
+	public function moveToPreviousStage () {
+
+		$experiment = $this->interactor->getExperiment();
+
+		if ($this->currentUser and $experiment->canEditSettings($this->currentUser)) {
+
+			$experiment->moveToPreviousStage();
 			$this->repository->save($experiment);
 
 		} else {
