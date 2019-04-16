@@ -1,8 +1,4 @@
 RewriteEngine on
 RewriteCond $1 !^(index\.php|favicon\.ico|robots\.txt)
 RewriteRule ^(.*)$ /index.php/$1 [L]
-php_value upload_max_filesize 20M
-php_value post_max_size 20M
-RewriteCond %{HTTP:Authorization} .+
-RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 Header set Access-Control-Allow-Origin "*"

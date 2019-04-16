@@ -137,6 +137,20 @@ $agitator->post('/users/me/links/', function (Request $request) use ($app) {
 
 });
 
+$agitator->patch('/users/me/settings/', function (Request $request) use ($app) {
+
+	$userEditor = new \Karolina\User\UserEditor(new \Karolina\User\UserRepository($app['ci']));
+	$userEditor->setUser($app['currentUser']);
+	$settings = $request->request->get('settings');
+	$userEditor->updateSettings($settings);
+
+	$response['status'] = "success";
+	$response['message'] = "Settings have been updated.";
+
+	return $app->json($response);
+
+});
+
 
 $agitator->get('/users/preview/', function (Request $request) use ($app) {
 
@@ -206,8 +220,6 @@ $agitator->get('/users/{userId}/profile', function ($userId, Request $request) u
 
 		$getProfile = $getProfile->withExperiments($app['experimentInteractor']);
 	}
-
-    // $getProfile = $getProfile->withAcl();
 
 	$response = $getProfile->getResponse();
 

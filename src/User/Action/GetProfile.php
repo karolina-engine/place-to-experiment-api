@@ -58,6 +58,7 @@ Class GetProfile {
 		$response['profile']['email'] = NULL;
 		$response['profile']['phone'] = NULL;
 		$response['profile']['document_number'] = NULL;
+		$response['profile']['settings'] = NULL;
 
 		if ($currentUser and ($currentUser->isAdmin() or $currentUser->isSame($user))) {
 
@@ -97,28 +98,6 @@ Class GetProfile {
 		}
 
 		return $this;
-
-	}
-
-    public function withAcl () {
-
-        $acl = ['view'];
-
-		if ($this->currentUser) {
-
-            if ($this->currentUser->isSame($this->user)) {
-				$acl[] = 'edit';
-			}
-
-			if ($this->currentUser->isAdmin()) {
-				$acl[] = 'admin';
-			}
-
-		}
-
-        $this->response['acl'] = $acl;
-
-        return $this;
 
 	}
 

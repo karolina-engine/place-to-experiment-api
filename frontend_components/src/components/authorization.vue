@@ -125,9 +125,9 @@ export default {
                     'phone': this.profile.phone,
                     'document_number': this.profile.document_number
                 }
-                let userAclObject = this.acl
+                // let userAclObject = this.acl
                 this.setLocalStorageObjectMixin('userData', userDataObject)
-                this.setLocalStorageObjectMixin('userAcl', userAclObject)
+                // this.setLocalStorageObjectMixin('userAcl', userAclObject)
                 // emit event so that other components can react to login
                 this.$root.eventBus.$emit('profile')
             }, (error) => {

@@ -85,6 +85,7 @@ class Notification
         return htmlentities($content, ENT_QUOTES, 'UTF-8');
 
     }
+    
     public function setSubjectFromTemplate ($templateKey, $args = array()) {
 
         $template = $this->getTemplate($templateKey);
