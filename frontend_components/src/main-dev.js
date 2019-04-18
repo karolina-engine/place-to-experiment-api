@@ -118,10 +118,6 @@ Vue.component(
     'date-picker-component',
     require('./components/date-picker-component')
 )
-Vue.component(
-    'commento-sso',
-    require('./components/commento-sso')
-)
 
 /* eslint-disable */
 // import plugins
