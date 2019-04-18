@@ -126,10 +126,6 @@ Vue.component(
     /* eslint-disable func-call-spacing */
     import ('./components/date-picker-component')
 )
-Vue.component(
-    'commento-sso',
-    require('./components/commento-sso')
-)
 /* eslint-disable */
 // import plugins
 import VeeValidate from 'vee-validate'
